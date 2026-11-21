@@ -31,3 +31,12 @@
 - Tes     : n.a.
 - Approval: -
 - Lanjut  : bangun ulang sesi 1 dari awal (repo GitHub private dulu, push di akhir sesi)
+
+
+### S1 | 2026-11-17 | Inisialisasi proyek Laravel + Filament + Tailwind
+- Hasil   : selesai
+- Dikerjakan: setup Laravel 13, Filament 5 (/admin), Pest 4, Playwright, Tailwind v4 token brand & placeholder `/`
+- File utama: composer.json, .env.example, resources/css/app.css, resources/views/welcome.blade.php, tests/Feature/HomeTest.php
+- Tes     : pint ✔ | pest ✔ | e2e ✔ | manual ✔
+- Approval: bersihkan folder sisa parsial; repo GitHub origin; dependensi sesi (laravel 13, filament 5, pest, playwright)
+- Lanjut  : staging Hostinger (1b) atau skema DB blog (2)
