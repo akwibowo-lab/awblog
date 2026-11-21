@@ -12,8 +12,8 @@
 
 ## Fitur Sesi Berikutnya (hanya 1)
 
-- **Nama**: Staging Hostinger (1b) atau Skema DB Blog (2) — pilih salah satu saat mulai sesi
-- **Tujuan**: Menyiapkan subdomain staging Hostinger (PHP 8.3 web & CLI) ATAU merancang migrasi skema DB (`posts`, `categories`, `tags`, `media`, `projects`).
+- **Nama**: Setup lingkungan dev Proxmox + migrasi repo ke Remote SSH (1 Source of Truth)
+- **Tujuan**: Merancang dan menyiapkan lingkungan development di Proxmox (multi-project Laravel: PHP 8.3, Composer, Node, MySQL/MariaDB, Playwright/Chromium, Git + SSH) agar laptop & PC bekerja via Remote SSH dari 1 SOT, lalu memindahkan proyek ini ke sana. Mulai dengan diskusi arsitektur/topologi sebelum eksekusi.
 
 ## Keputusan yang Sudah Final
 
