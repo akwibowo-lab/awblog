@@ -184,7 +184,8 @@ class Post extends Model
      */
     public function renderedContentHtml(): string
     {
-        $html = app(ShortcodeCleaner::class)->clean((string) $this->content_html);
+        $cleaner = app(ShortcodeCleaner::class);
+        $html = $cleaner->formatParagraphs($cleaner->clean((string) $this->content_html));
 
         if ($html === '' || ! str_contains($html, '<img')) {
             return $html;

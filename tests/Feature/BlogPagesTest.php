@@ -102,7 +102,7 @@ test('post detail preserves legacy root slug url with seo, og, hero image, and r
         'title' => 'Workflow Orthomosaic dengan WebODM',
         'slug' => 'workflow-orthomosaic-webodm',
         'featured_media_id' => $media->id,
-        'content_html' => '<p>Langkah pemrosesan foto udara.</p>[caption id="attachment_3394" align="aligncenter" width="784"]<img src="/storage/media/inline.webp" alt="Contoh inline">[/caption][gallery bgs_gallery_image_size="full" bgs_gallery_title="Kegiatan" ids="3397,3396"]',
+        'content_html' => "Paragraf pertama catatan lapangan.\r\n\r\nParagraf kedua tentang kalibrasi.\r\n\r\n[caption id=\"attachment_3394\" align=\"aligncenter\" width=\"784\"]<img src=\"/storage/media/inline.webp\" alt=\"Contoh inline\">[/caption][gallery bgs_gallery_image_size=\"full\" bgs_gallery_title=\"Kegiatan\" ids=\"3397,3396\"]",
         'meta_title' => 'Workflow Orthomosaic WebODM',
         'meta_description' => 'Catatan praktis memproses foto udara dengan WebODM.',
     ]);
@@ -125,6 +125,8 @@ test('post detail preserves legacy root slug url with seo, og, hero image, and r
         ->assertSee('<meta property="og:type" content="article">', false)
         ->assertSee('odm-large.webp')
         ->assertSee('fetchpriority="high"', false)
+        ->assertSee('<p>Paragraf pertama catatan lapangan.</p>', false)
+        ->assertSee('<p>Paragraf kedua tentang kalibrasi.</p>', false)
         ->assertSee('<img decoding="async" loading="lazy" src="/storage/media/inline.webp" alt="Contoh inline">', false)
         ->assertDontSee('[caption')
         ->assertDontSee('[/caption]')

@@ -106,9 +106,15 @@
                         title="{{ __('blog.nav.theme_to_light') }}"
                         data-label-light="{{ __('blog.nav.theme_to_light') }}"
                         data-label-dark="{{ __('blog.nav.theme_to_dark') }}"
-                        class="inline-flex min-h-11 min-w-11 items-center justify-center rounded-lg border border-brand-border bg-brand-surface text-lg leading-none text-brand-text hover:border-brand-accent transition-colors"
+                        class="inline-flex min-h-11 min-w-11 items-center justify-center rounded-lg border border-brand-border bg-brand-surface text-brand-text hover:border-brand-accent hover:text-brand-accent transition-colors"
                     >
-                        <span id="theme-toggle-icon" aria-hidden="true">☀️</span>
+                        <svg id="theme-icon-sun" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <circle cx="12" cy="12" r="4"/>
+                            <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/>
+                        </svg>
+                        <svg id="theme-icon-moon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="hidden">
+                            <path d="M21 12.79A9 9 0 1 1 11.21 3a7 7 0 0 0 9.79 9.79Z"/>
+                        </svg>
                     </button>
                 </nav>
             </div>
@@ -146,8 +152,9 @@
         <script>
             (function () {
                 var btn = document.getElementById('theme-toggle');
-                var icon = document.getElementById('theme-toggle-icon');
-                if (!btn || !icon) return;
+                var sun = document.getElementById('theme-icon-sun');
+                var moon = document.getElementById('theme-icon-moon');
+                if (!btn || !sun || !moon) return;
 
                 function sync(theme) {
                     var isLight = theme === 'light';
@@ -155,7 +162,8 @@
                     btn.setAttribute('aria-pressed', isLight ? 'true' : 'false');
                     btn.setAttribute('aria-label', nextText);
                     btn.setAttribute('title', nextText);
-                    icon.textContent = isLight ? '🌙' : '☀️';
+                    sun.classList.toggle('hidden', isLight);
+                    moon.classList.toggle('hidden', !isLight);
                 }
 
                 sync(document.documentElement.getAttribute('data-theme') || 'dark');
