@@ -4,16 +4,16 @@
 
 ## Status Saat Ini
 
-- **Fase**: 7 — Homepage Portofolio selesai
-- **Branch aktif**: `feat/homepage-portfolio` (bercabang dari `feat/seo-redirects`; siap merge ke `main` setelah pemilik setuju)
-- **Fitur sesi terakhir**: Homepage Portofolio (`/`)
-- **Status**: selesai; 5 bagian (Hero dengan logo AW Orbit `fetchpriority="high"` & CTA WhatsApp `wa.me/6289623084000`, Sertifikasi Drone editorial, Galeri Aplikasi `Project` + fallback `awork.id` & `ODM Studio App`, Blog Terbaru 3 artikel `post-card`, Kontak WhatsApp + `mailto:akwibowo@gmail.com` tanpa teks email eksplisit + RSS), smooth scroll + tombol back-to-top, `lang/id/home.php`, SEO meta; `pint`, Pest (`28 passed`), dan Playwright (`5 passed`) ✔
+- **Fase**: 8 — Halaman Proyek/Aplikasi selesai
+- **Branch aktif**: `feat/projects-page` (bercabang dari `feat/homepage-portfolio`; siap merge ke `main` setelah pemilik setuju)
+- **Fitur sesi terakhir**: Halaman Proyek/Aplikasi (`/proyek` & `/proyek/{slug}`)
+- **Status**: selesai; rute `/proyek` & `/proyek/{slug}`, filter kategori (`app`, `drone`, `case_study`), empty state, fallback `awork.id` & `ODM Studio App` + dukungan penuh model `Project` + `featuredMedia`, nav header `Proyek`, tautan dari homepage, `lang/id/projects.php`, `pint`, Pest (`32 passed`), Playwright (`6 passed`), dan cek manual ✔
 - **Terakhir diperbarui**: 2026-11-22
 
 ## Fitur Sesi Berikutnya (hanya 1)
 
-- **Nama**: Halaman Proyek/Aplikasi (8) atau Admin Filament (9) atau Staging Hostinger (1b)
-- **Tujuan**: Membangun halaman detail/indeks Proyek (`/proyek` untuk `awork.id`, `ODM Studio App`), atau Admin Filament 5 (kelola post, media, proyek, PDF portofolio, redirects, serta konten dinamis homepage portofolio termasuk foto hero), atau deploy awal staging Hostinger (butuh approval).
+- **Nama**: Admin Filament 5 (9) atau Staging Hostinger (1b)
+- **Tujuan**: Membangun Admin Filament 5 (CRUD post, kategori, tag, media, proyek termasuk upload thumbnail `featured_media_id`, PDF portofolio, redirects, serta backend dinamis konten homepage termasuk foto hero/profil), atau deploy awal staging Hostinger (butuh approval).
 
 ## Keputusan yang Sudah Final
 
@@ -42,27 +42,25 @@
 ## Peta Repo Ringkas
 
 ```
-routes/web.php                                   /, /sitemap.xml, /feed, /blog, /category/{slug}, /tag/{slug}, /{slug}
+routes/web.php                                   /, /proyek, /proyek/{slug}, /sitemap.xml, /feed, /blog, /category/{slug}, /tag/{slug}, /{slug}
 app/Http/Controllers/HomeController.php          Controller tipis homepage portofolio
-app/Actions/Home/GetHomepageData.php             Ambil proyek terbit, 3 post terbaru, PDF portofolio
-resources/views/home.blade.php                   Homepage 5 bagian + back-to-top
-lang/id/home.php                                 Teks & meta SEO homepage Bahasa Indonesia
-app/Http/Controllers/BlogController.php          Controller tipis halaman blog publik
-app/Http/Controllers/SeoController.php           Endpoint XML sitemap.xml & RSS feed /feed
-app/Http/Middleware/HandleLegacyRedirects.php    Middleware global redirect 301 URL lama
-tests/Feature/HomeTest.php                       Pest test homepage portofolio & SEO meta
-tests/e2e/home.spec.js                           Playwright E2E homepage (desktop, mobile, back-to-top)
+app/Http/Controllers/ProjectController.php       Controller tipis halaman /proyek & /proyek/{slug}
+app/Actions/Projects/ListPublishedProjects.php   Daftar proyek terbit + filter tipe + fallback awork.id & ODM Studio App
+app/Actions/Projects/GetPublishedProject.php     Detail proyek terbit + proyek terkait
+resources/views/projects/{index,show}.blade.php  Indeks filterable & detail proyek
+lang/id/projects.php                             Teks UI & meta SEO halaman proyek
+tests/Feature/ProjectsTest.php                   Pest test /proyek & /proyek/{slug}
+tests/e2e/projects.spec.js                       Playwright E2E proyek (filter, detail, tema, mobile 375px)
 ```
 
 ## Backlog (urut prioritas, jangan dikerjakan tanpa dijadwalkan)
 
 1b. Staging Hostinger (subdomain, PHP 8.3 web dan CLI, deploy awal; butuh approval)
-8. Halaman Proyek/Aplikasi (`awork.id`, ODM Studio App)
-9. Admin Filament: kelola post, media, proyek, PDF portofolio, redirects, serta backend dinamis seluruh konten homepage portofolio (hero + foto profil, sertifikasi drone, galeri aplikasi, kontak)
+9. Admin Filament: kelola post, media, proyek (upload thumbnail), PDF portofolio, redirects, serta backend dinamis seluruh konten homepage portofolio (hero + foto profil, sertifikasi drone, galeri aplikasi, kontak)
 10. Performa & deploy
 
 ## Catatan untuk Sesi Berikutnya
 
-- Mulai sesi baru dari branch `feat/homepage-portfolio` (atau merge branch fitur ke `main` terlebih dulu bila pemilik setuju).
-- Fitur UI berikutnya (Halaman Proyek, Admin Filament) wajib menyertakan checklist cek manual pemilik sebelum finalisasi.
+- Mulai sesi baru dari branch `feat/projects-page` (atau merge branch fitur ke `main` terlebih dulu bila pemilik setuju).
+- Fitur UI berikutnya (Admin Filament) wajib menyertakan checklist cek manual pemilik sebelum finalisasi.
 - 5 post lama masih punya referensi `wp-content/uploads` karena 8 file sumber hilang di arsip `2026-11-12` (bisa dibersihkan di sesi perbaikan konten atau admin).

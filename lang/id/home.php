@@ -39,6 +39,7 @@ return [
     'projects' => [
         'heading' => 'Galeri Aplikasi & Proyek',
         'intro' => 'Perangkat lunak dan sistem kerja yang dibangun untuk mendukung operasi lapangan, otomasi, dan alur kerja harian.',
+        'view_all' => 'Lihat semua proyek',
         'types' => [
             'app' => 'Aplikasi Web',
             'drone' => 'Operasi Drone',

@@ -52,10 +52,10 @@
         </a>
 
         <header class="sticky top-0 z-40 border-b border-brand-border bg-brand-bg/95 backdrop-blur-sm">
-            <div class="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 sm:px-6 lg:px-8 h-16">
+            <div class="mx-auto flex max-w-6xl items-center justify-between gap-2 sm:gap-4 px-4 sm:px-6 lg:px-8 h-16">
                 <a
                     href="{{ route('home') }}"
-                    class="inline-flex min-h-11 items-center gap-3 text-brand-text hover:text-brand-accent transition-colors"
+                    class="inline-flex min-h-11 min-w-0 items-center gap-2 sm:gap-3 text-brand-text hover:text-brand-accent transition-colors"
                 >
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -63,23 +63,23 @@
                         width="32"
                         height="32"
                         aria-hidden="true"
-                        class="h-8 w-8 shrink-0"
+                        class="h-7 w-7 sm:h-8 sm:w-8 shrink-0"
                     >
                         <path d="M47.2 -26.2 A54 54 0 1 1 26.2 -47.2" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
                         <circle cx="38.2" cy="-38.2" r="7" fill="var(--color-brand-accent)"/>
                         <path d="M-35.5 18 L-20.5 -18 L-5.5 18 M-30.5 6 L-10.5 6" fill="none" stroke="currentColor" stroke-width="4" stroke-linejoin="miter"/>
                         <path d="M-0.5 -18 L8.5 18 L17.5 -6.4 L26.5 18 L35.5 -18" fill="none" stroke="currentColor" stroke-width="4" stroke-linejoin="miter"/>
                     </svg>
-                    <span class="font-display text-base sm:text-lg font-semibold tracking-tight">
+                    <span class="truncate font-display text-sm sm:text-lg font-semibold tracking-tight">
                         {{ __('blog.site_name') }}
                     </span>
                 </a>
 
-                <nav aria-label="{{ __('blog.nav.primary_label') }}" class="flex items-center gap-2 sm:gap-3">
+                <nav aria-label="{{ __('blog.nav.primary_label') }}" class="flex shrink-0 items-center gap-0.5 sm:gap-3">
                     <a
                         href="{{ route('home') }}"
                         @class([
-                            'inline-flex min-h-11 items-center px-3 text-sm transition-colors border-b-2',
+                            'inline-flex min-h-11 items-center px-1.5 sm:px-3 text-xs sm:text-sm transition-colors border-b-2',
                             'border-brand-accent font-medium text-brand-text' => request()->routeIs('home'),
                             'border-transparent text-brand-muted hover:text-brand-text' => ! request()->routeIs('home'),
                         ])
@@ -88,9 +88,20 @@
                         {{ __('blog.nav.home') }}
                     </a>
                     <a
+                        href="{{ route('projects.index') }}"
+                        @class([
+                            'inline-flex min-h-11 items-center px-1.5 sm:px-3 text-xs sm:text-sm transition-colors border-b-2',
+                            'border-brand-accent font-medium text-brand-text' => request()->routeIs('projects.*'),
+                            'border-transparent text-brand-muted hover:text-brand-text' => ! request()->routeIs('projects.*'),
+                        ])
+                        @if (request()->routeIs('projects.index')) aria-current="page" @endif
+                    >
+                        {{ __('blog.nav.projects') }}
+                    </a>
+                    <a
                         href="{{ route('blog.index') }}"
                         @class([
-                            'inline-flex min-h-11 items-center px-3 text-sm transition-colors border-b-2',
+                            'inline-flex min-h-11 items-center px-1.5 sm:px-3 text-xs sm:text-sm transition-colors border-b-2',
                             'border-brand-accent font-medium text-brand-text' => request()->routeIs('blog.*'),
                             'border-transparent text-brand-muted hover:text-brand-text' => ! request()->routeIs('blog.*'),
                         ])

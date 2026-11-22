@@ -6,6 +6,7 @@ return [
     'nav' => [
         'primary_label' => 'Navigasi utama',
         'home' => 'Beranda',
+        'projects' => 'Proyek',
         'blog' => 'Blog',
         'theme_to_light' => 'Mode terang',
         'theme_to_dark' => 'Mode gelap',

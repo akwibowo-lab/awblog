@@ -112,3 +112,12 @@
 - Tes     : pint ✔ | pest ✔ (28 passed) | e2e ✔ (5 passed) | manual ✔
 - Approval: -
 - Lanjut  : Halaman Proyek/Aplikasi (8), Admin Filament (9, termasuk backend dinamis homepage & foto hero), atau Staging Hostinger (1b)
+
+
+### S10 | 2026-11-22 | Halaman Proyek & Aplikasi (/proyek)
+- Hasil   : selesai
+- Dikerjakan: buat rute `/proyek` & `/proyek/{slug}` (kecualikan `proyek` pada `/{slug}`), `ProjectController`, `ListPublishedProjects` & `GetPublishedProject` (model `Project` + fallback `awork.id` & `ODM Studio App`, filter `?type=`), view `projects/index` & `projects/show`, menu nav `Proyek` (responsif 375px) & tautan dari homepage, `lang/id/projects.php`, serta tes Pest & Playwright
+- File utama: routes/web.php, app/Http/Controllers/ProjectController.php, app/Actions/Projects/ListPublishedProjects.php, app/Actions/Projects/GetPublishedProject.php, resources/views/projects/index.blade.php, resources/views/projects/show.blade.php, tests/Feature/ProjectsTest.php, tests/e2e/projects.spec.js
+- Tes     : pint ✔ | pest ✔ (32 passed) | e2e ✔ (6 passed) | manual ✔
+- Approval: -
+- Lanjut  : Admin Filament 5 (9, termasuk upload thumbnail proyek & foto hero homepage) atau Staging Hostinger (1b)

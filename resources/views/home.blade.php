@@ -102,13 +102,22 @@
     {{-- Galeri Aplikasi --}}
     <section id="aplikasi" aria-labelledby="projects-heading" class="section-band scroll-mt-20 border-y border-brand-border bg-brand-surface/40">
         <div class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
-            <div class="max-w-2xl">
-                <h2 id="projects-heading" class="section-title font-display font-semibold tracking-tight text-brand-text">
-                    {{ __('home.projects.heading') }}
-                </h2>
-                <p class="mt-3 text-sm leading-relaxed text-brand-muted sm:text-base">
-                    {{ __('home.projects.intro') }}
-                </p>
+            <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+                <div class="max-w-2xl">
+                    <h2 id="projects-heading" class="section-title font-display font-semibold tracking-tight text-brand-text">
+                        {{ __('home.projects.heading') }}
+                    </h2>
+                    <p class="mt-3 text-sm leading-relaxed text-brand-muted sm:text-base">
+                        {{ __('home.projects.intro') }}
+                    </p>
+                </div>
+
+                <a
+                    href="{{ route('projects.index') }}"
+                    class="inline-flex min-h-11 shrink-0 items-center text-sm font-medium text-brand-accent-2 transition-colors hover:text-brand-accent"
+                >
+                    {{ __('home.projects.view_all') }}
+                </a>
             </div>
 
             @if ($projects->isNotEmpty())
