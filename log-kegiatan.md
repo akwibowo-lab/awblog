@@ -103,3 +103,12 @@
 - Tes     : pint ✔ | pest ✔ (26 passed) | e2e ✔ (5 passed) | manual n.a.
 - Approval: tambah rute `/sitemap.xml` dan `/feed`, perbarui `public/robots.txt`, serta tambah tabel & middleware redirect 301 URL lama
 - Lanjut  : Staging Hostinger (1b) atau Homepage portofolio (7)
+
+
+### S9 | 2026-11-22 | Homepage Portofolio
+- Hasil   : selesai
+- Dikerjakan: bangun homepage `/` 5 bagian (Hero + AW Orbit `fetchpriority="high"`, Sertifikasi Drone editorial, Galeri Aplikasi `Project` + fallback `awork.id` & `ODM Studio App`, Blog Terbaru 3 artikel, Kontak WhatsApp & `mailto:`), smooth scroll + tombol back-to-top, token visual di `resources/css/app.css`, teks & SEO meta di `lang/id/home.php`, serta tes Pest & Playwright
+- File utama: app/Http/Controllers/HomeController.php, app/Actions/Home/GetHomepageData.php, resources/views/home.blade.php, lang/id/home.php, tests/Feature/HomeTest.php, tests/e2e/home.spec.js
+- Tes     : pint ✔ | pest ✔ (28 passed) | e2e ✔ (5 passed) | manual ✔
+- Approval: -
+- Lanjut  : Halaman Proyek/Aplikasi (8), Admin Filament (9, termasuk backend dinamis homepage & foto hero), atau Staging Hostinger (1b)

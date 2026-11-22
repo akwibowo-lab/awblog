@@ -24,6 +24,8 @@
     color-scheme: dark;
     --prose-body: #DCE3EF;
     --prose-pre-bg: #070C16;
+    --hero-stage-bg: linear-gradient(180deg, #0B1220 0%, #101A2D 100%);
+    --section-space-y: clamp(3rem, 5.5vw, 5rem);
 }
 
 :root[data-theme='light'] {
@@ -37,9 +39,33 @@
     --color-brand-accent-2: #0369A1;
     --prose-body: #1E293B;
     --prose-pre-bg: #F1F5F9;
+    --hero-stage-bg: linear-gradient(180deg, #F8FAFC 0%, #EFF4FA 100%);
+}
+
+.hero-stage {
+    background: var(--hero-stage-bg);
+}
+
+.hero-title {
+    font-size: clamp(2.25rem, 5.5vw, 3.75rem);
+    line-height: 1.08;
+    letter-spacing: -0.025em;
+}
+
+.section-title {
+    font-size: clamp(1.5rem, 2.8vw, 2.125rem);
+    line-height: 1.2;
+}
+
+.section-band {
+    padding-block: var(--section-space-y);
 }
 
 @layer base {
+    html {
+        scroll-behavior: smooth;
+    }
+
     a[href],
     button:not(:disabled),
     summary,
