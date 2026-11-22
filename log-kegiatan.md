@@ -40,3 +40,21 @@
 - Tes     : pint ✔ | pest ✔ | e2e ✔ | manual ✔
 - Approval: bersihkan folder sisa parsial; repo GitHub origin; dependensi sesi (laravel 13, filament 5, pest, playwright)
 - Lanjut  : staging Hostinger (1b) atau skema DB blog (2)
+
+
+### S2 | 2026-11-22 | Skema DB (`posts`, `categories`, `tags`, `media`, `projects`) + Model & Relasi
+- Hasil   : selesai
+- Dikerjakan: 7 migrasi skema konten & pivot WP-ready, 2 enum (`ContentStatus`, `ProjectType`), 5 model + relasi `User::posts()`, 5 factory, dan tes Pest `DatabaseSchemaTest`
+- File utama: database/migrations/2026_11_22_000001..000007_*.php, app/Models/Post.php, app/Models/Project.php, app/Enums/ContentStatus.php, tests/Feature/DatabaseSchemaTest.php
+- Tes     : pint ✔ | pest ✔ (9 passed) | e2e ✔ (1 passed) | manual n.a.
+- Approval: -
+- Lanjut  : Impor WordPress (`c71gfp8_*`) ke staging `wp_legacy` (atau Staging Hostinger 1b)
+
+
+### S3 | 2026-11-22 | Setup lingkungan dev Proxmox + migrasi repo ke Remote SSH
+- Hasil   : selesai
+- Dikerjakan: buat LXC CT 103 `laravel-dev` (`192.168.0.105`, Ubuntu 24.04, 4 vCPU, 4 GB RAM, 30 GB disk), install PHP 8.3.6 + Composer 2.11 + Node 22 + MariaDB 10.11 + Playwright Chromium, setup SSH key-only + GitHub SSH key + akses PC & laptop, clone & verifikasi `awblog`
+- File utama: handoff.md, log-kegiatan.md
+- Tes     : pint ✔ | pest ✔ | e2e ✔ | manual n.a.
+- Approval: inspeksi read-only `aw-server` & `hostinger`; pembuatan & provisioning CT 103; static IP `192.168.0.105`; clone & install dependensi `awblog`
+- Lanjut  : Impor WordPress (`c71gfp8_*`) ke staging `wp_legacy` via Remote SSH di `laravel-dev`
