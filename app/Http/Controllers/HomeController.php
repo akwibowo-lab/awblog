@@ -14,16 +14,20 @@ class HomeController extends Controller
         Carbon::setLocale('id');
 
         $data = $getHomepageData->execute();
+        $settings = $data['settings'];
 
         return view('home', [
             'projects' => $data['projects'],
             'posts' => $data['posts'],
             'portfolioPdfUrl' => $data['portfolioPdfUrl'],
-            'seoTitle' => __('home.seo.title'),
-            'seoDescription' => __('home.seo.description'),
+            'heroImageUrl' => $data['heroImageUrl'],
+            'hasCustomHeroImage' => $data['hasCustomHeroImage'],
+            'settings' => $settings,
+            'seoTitle' => $settings['seo_title'] ?? __('home.seo.title'),
+            'seoDescription' => $settings['seo_description'] ?? __('home.seo.description'),
             'canonicalUrl' => route('home'),
             'ogType' => 'website',
-            'ogImage' => asset('branding/aw-orbit-dark.svg'),
+            'ogImage' => $data['heroImageUrl'],
         ]);
     }
 }

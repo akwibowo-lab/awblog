@@ -4,16 +4,16 @@
 
 ## Status Saat Ini
 
-- **Fase**: 8 — Halaman Proyek/Aplikasi selesai
-- **Branch aktif**: `feat/projects-page` (bercabang dari `feat/homepage-portfolio`; siap merge ke `main` setelah pemilik setuju)
-- **Fitur sesi terakhir**: Halaman Proyek/Aplikasi (`/proyek` & `/proyek/{slug}`)
-- **Status**: selesai; rute `/proyek` & `/proyek/{slug}`, filter kategori (`app`, `drone`, `case_study`), empty state, fallback `awork.id` & `ODM Studio App` + dukungan penuh model `Project` + `featuredMedia`, nav header `Proyek`, tautan dari homepage, `lang/id/projects.php`, `pint`, Pest (`32 passed`), Playwright (`6 passed`), dan cek manual ✔
+- **Fase**: 9 — Admin Filament 5 selesai
+- **Branch aktif**: `feat/filament-admin` (bercabang dari `feat/projects-page`; siap merge ke `main` setelah pemilik setuju)
+- **Fitur sesi terakhir**: Admin Filament 5 (`/admin`, CRUD konten, SEO analyzer, preview, revisi, dan backend dinamis homepage)
+- **Status**: selesai; logo AW Orbit, `FilamentUser`, 6 Resource (`Post`, `Category`, `Tag`, `Media`, `Project`, `Redirect`), `ManageHomepageSettings` (foto hero, sertifikasi, PDF portofolio, kontak, SEO), `PostSeoAnalyzer` (focus keyword + alt text gambar), preview khusus `/admin/preview/...`, sticky sidebar, auto-save draft, maks. 2 revisi artikel, `pint`, Pest (`40 passed`), Playwright (`7 passed`), dan cek manual ✔
 - **Terakhir diperbarui**: 2026-11-22
 
 ## Fitur Sesi Berikutnya (hanya 1)
 
-- **Nama**: Admin Filament 5 (9) atau Staging Hostinger (1b)
-- **Tujuan**: Membangun Admin Filament 5 (CRUD post, kategori, tag, media, proyek termasuk upload thumbnail `featured_media_id`, PDF portofolio, redirects, serta backend dinamis konten homepage termasuk foto hero/profil), atau deploy awal staging Hostinger (butuh approval).
+- **Nama**: Staging Hostinger (1b) atau Performa & Deploy (10)
+- **Tujuan**: Menyiapkan deploy awal ke Staging Hostinger (subdomain, PHP 8.3 web & CLI, DB, storage symlink, cron scheduler — butuh approval), atau optimasi performa & kesiapan rilis produksi.
 
 ## Keputusan yang Sudah Final
 
@@ -42,25 +42,24 @@
 ## Peta Repo Ringkas
 
 ```
-routes/web.php                                   /, /proyek, /proyek/{slug}, /sitemap.xml, /feed, /blog, /category/{slug}, /tag/{slug}, /{slug}
-app/Http/Controllers/HomeController.php          Controller tipis homepage portofolio
-app/Http/Controllers/ProjectController.php       Controller tipis halaman /proyek & /proyek/{slug}
-app/Actions/Projects/ListPublishedProjects.php   Daftar proyek terbit + filter tipe + fallback awork.id & ODM Studio App
-app/Actions/Projects/GetPublishedProject.php     Detail proyek terbit + proyek terkait
-resources/views/projects/{index,show}.blade.php  Indeks filterable & detail proyek
-lang/id/projects.php                             Teks UI & meta SEO halaman proyek
-tests/Feature/ProjectsTest.php                   Pest test /proyek & /proyek/{slug}
-tests/e2e/projects.spec.js                       Playwright E2E proyek (filter, detail, tema, mobile 375px)
+app/Providers/Filament/AdminPanelProvider.php    Panel /admin (AW Orbit, back-to-top hook)
+app/Filament/Resources/{Posts,Categories,Tags,Media,Projects,Redirects}/  CRUD Filament 5
+app/Filament/Pages/ManageHomepageSettings.php    Pengaturan homepage dinamis, foto hero, PDF portofolio
+app/Http/Controllers/Admin/PreviewController.php Rute preview /admin/preview/{posts,projects} (noindex)
+app/Services/Seo/PostSeoAnalyzer.php             Skor SEO focus keyword, metadata, & alt text gambar
+app/Services/MediaUploadService.php              Upload media nama asli + varian WebP
+app/Models/{SiteSetting,PostRevision}.php        Pengaturan homepage & maks. 2 revisi artikel
+tests/Feature/FilamentAdminTest.php              Pest test panel admin, SEO analyzer, preview, revisi
+tests/e2e/admin.spec.js                          Playwright E2E login & responsif panel admin
 ```
 
 ## Backlog (urut prioritas, jangan dikerjakan tanpa dijadwalkan)
 
 1b. Staging Hostinger (subdomain, PHP 8.3 web dan CLI, deploy awal; butuh approval)
-9. Admin Filament: kelola post, media, proyek (upload thumbnail), PDF portofolio, redirects, serta backend dinamis seluruh konten homepage portofolio (hero + foto profil, sertifikasi drone, galeri aplikasi, kontak)
-10. Performa & deploy
+10. Performa & deploy (caching halaman/query, verifikasi LCP/WebP, merge `main`)
 
 ## Catatan untuk Sesi Berikutnya
 
-- Mulai sesi baru dari branch `feat/projects-page` (atau merge branch fitur ke `main` terlebih dulu bila pemilik setuju).
-- Fitur UI berikutnya (Admin Filament) wajib menyertakan checklist cek manual pemilik sebelum finalisasi.
-- 5 post lama masih punya referensi `wp-content/uploads` karena 8 file sumber hilang di arsip `2026-11-12` (bisa dibersihkan di sesi perbaikan konten atau admin).
+- Mulai sesi baru dari branch `feat/filament-admin` (atau merge branch fitur ke `main` terlebih dulu bila pemilik setuju).
+- Di Playwright pada `laravel-dev`, jalankan `npx playwright test --workers=1` agar `php artisan serve` tidak timeout saat paralel.
+- 5 post lama masih punya referensi `wp-content/uploads` karena 8 file sumber hilang di arsip `2026-11-12` (bisa dibersihkan via `/admin/posts`).

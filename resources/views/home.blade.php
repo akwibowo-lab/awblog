@@ -7,15 +7,15 @@
             <div class="grid items-center gap-10 lg:grid-cols-12 lg:gap-12">
                 <div class="min-w-0 lg:col-span-8">
                     <p class="font-mono text-xs tracking-wide text-brand-accent sm:text-sm">
-                        {{ __('home.hero.role') }}
+                        {{ $settings['hero_role'] }}
                     </p>
 
                     <h1 id="hero-heading" class="hero-title mt-3 font-display font-semibold text-brand-text">
-                        {{ __('home.hero.name') }}
+                        {{ $settings['hero_name'] }}
                     </h1>
 
                     <p class="mt-5 max-w-2xl text-base leading-relaxed text-brand-muted sm:text-lg">
-                        {{ __('home.hero.summary') }}
+                        {{ $settings['hero_summary'] }}
                     </p>
 
                     <div class="mt-8 flex flex-wrap items-center gap-4">
@@ -23,29 +23,32 @@
                             href="#aplikasi"
                             class="inline-flex min-h-11 items-center justify-center rounded-lg bg-brand-accent px-5 py-2.5 text-sm font-semibold text-brand-bg transition-opacity hover:opacity-90"
                         >
-                            {{ __('home.hero.cta_projects') }}
+                            {{ $settings['hero_cta_projects'] }}
                         </a>
 
                         <a
-                            href="{{ __('home.hero.whatsapp_url') }}"
+                            href="{{ $settings['hero_whatsapp_url'] }}"
                             target="_blank"
                             rel="noopener noreferrer"
                             class="inline-flex min-h-11 items-center justify-center rounded-lg border border-brand-border bg-brand-surface px-5 py-2.5 text-sm font-medium text-brand-text transition-colors hover:border-brand-accent hover:text-brand-accent"
                         >
-                            {{ __('home.hero.cta_contact') }}
+                            {{ $settings['hero_cta_contact'] }}
                         </a>
                     </div>
                 </div>
 
                 <div class="flex justify-start lg:col-span-4 lg:justify-end">
                     <img
-                        src="{{ asset('branding/aw-orbit-dark.svg') }}"
-                        alt="{{ __('home.hero.orbit_alt') }}"
+                        src="{{ $heroImageUrl }}"
+                        alt="{{ $settings['hero_image_alt'] }}"
                         width="220"
                         height="220"
                         fetchpriority="high"
                         decoding="sync"
-                        class="h-36 w-36 sm:h-48 sm:w-48 lg:h-52 lg:w-52"
+                        @class([
+                            'h-36 w-36 sm:h-48 sm:w-48 lg:h-52 lg:w-52',
+                            'rounded-2xl border border-brand-border object-cover shadow-lg' => $hasCustomHeroImage,
+                        ])
                     >
                 </div>
             </div>
@@ -57,10 +60,10 @@
         <div class="mx-auto grid max-w-6xl gap-10 px-4 sm:px-6 lg:grid-cols-12 lg:gap-14 lg:px-8">
             <div class="min-w-0 lg:col-span-4">
                 <h2 id="certification-heading" class="section-title font-display font-semibold tracking-tight text-brand-text">
-                    {{ __('home.certification.heading') }}
+                    {{ $settings['certification_heading'] }}
                 </h2>
                 <p class="mt-3 text-sm leading-relaxed text-brand-muted sm:text-base">
-                    {{ __('home.certification.intro') }}
+                    {{ $settings['certification_intro'] }}
                 </p>
 
                 @if ($portfolioPdfUrl)
@@ -71,7 +74,7 @@
                             rel="noopener noreferrer"
                             class="inline-flex min-h-11 items-center justify-center rounded-lg border border-brand-border bg-brand-surface px-4 py-2.5 text-sm font-medium text-brand-text transition-colors hover:border-brand-accent hover:text-brand-accent"
                         >
-                            {{ __('home.certification.download_pdf') }}
+                            {{ $settings['certification_download_label'] }}
                         </a>
                     </div>
                 @endif
@@ -79,7 +82,7 @@
 
             <div class="min-w-0 lg:col-span-8">
                 <ol class="divide-y divide-brand-border border-y border-brand-border">
-                    @foreach (__('home.certification.items') as $item)
+                    @foreach (($settings['certification_items'] ?? []) as $item)
                         <li class="grid gap-2 py-5 sm:grid-cols-12 sm:items-baseline sm:gap-6 sm:py-6">
                             <span class="font-mono text-xs font-medium text-brand-accent sm:col-span-3">
                                 {{ $item['code'] }}
@@ -105,10 +108,10 @@
             <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
                 <div class="max-w-2xl">
                     <h2 id="projects-heading" class="section-title font-display font-semibold tracking-tight text-brand-text">
-                        {{ __('home.projects.heading') }}
+                        {{ $settings['projects_heading'] }}
                     </h2>
                     <p class="mt-3 text-sm leading-relaxed text-brand-muted sm:text-base">
-                        {{ __('home.projects.intro') }}
+                        {{ $settings['projects_intro'] }}
                     </p>
                 </div>
 
@@ -258,10 +261,10 @@
             <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
                 <div class="max-w-2xl">
                     <h2 id="blog-heading" class="section-title font-display font-semibold tracking-tight text-brand-text">
-                        {{ __('home.blog.heading') }}
+                        {{ $settings['blog_heading'] }}
                     </h2>
                     <p class="mt-3 text-sm leading-relaxed text-brand-muted sm:text-base">
-                        {{ __('home.blog.intro') }}
+                        {{ $settings['blog_intro'] }}
                     </p>
                 </div>
 
@@ -292,28 +295,28 @@
         <div class="mx-auto grid max-w-6xl gap-8 px-4 sm:px-6 lg:grid-cols-12 lg:items-center lg:gap-12 lg:px-8">
             <div class="min-w-0 lg:col-span-7">
                 <h2 id="contact-heading" class="section-title font-display font-semibold tracking-tight text-brand-text">
-                    {{ __('home.contact.heading') }}
+                    {{ $settings['contact_heading'] }}
                 </h2>
                 <p class="mt-3 max-w-xl text-sm leading-relaxed text-brand-muted sm:text-base">
-                    {{ __('home.contact.body') }}
+                    {{ $settings['contact_body'] }}
                 </p>
             </div>
 
             <div class="flex flex-wrap items-center gap-3 sm:gap-4 lg:col-span-5 lg:justify-end">
                 <a
-                    href="{{ __('home.contact.whatsapp_url') }}"
+                    href="{{ $settings['contact_whatsapp_url'] }}"
                     target="_blank"
                     rel="noopener noreferrer"
                     class="inline-flex min-h-11 items-center justify-center rounded-lg bg-brand-accent px-5 py-2.5 text-sm font-semibold text-brand-bg transition-opacity hover:opacity-90"
                 >
-                    {{ __('home.contact.whatsapp_label') }}
+                    {{ $settings['contact_whatsapp_label'] }}
                 </a>
 
                 <a
-                    href="mailto:{{ __('home.contact.email_address') }}"
+                    href="mailto:{{ $settings['contact_email_address'] }}"
                     class="inline-flex min-h-11 items-center justify-center rounded-lg border border-brand-border bg-brand-surface px-5 py-2.5 text-sm font-medium text-brand-text transition-colors hover:border-brand-accent hover:text-brand-accent"
                 >
-                    {{ __('home.contact.email_label') }}
+                    {{ $settings['contact_email_label'] }}
                 </a>
 
                 <a

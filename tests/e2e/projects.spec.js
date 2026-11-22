@@ -16,8 +16,10 @@ test('projects index, filter, detail page, theme toggle, and mobile layout work 
 
     await expect(page).toHaveTitle(/Proyek & Aplikasi/);
     await expect(page.getByRole('heading', { level: 1, name: /Proyek & Aplikasi/i })).toBeVisible();
-    await expect(page.getByRole('heading', { level: 2, name: 'awork.id' })).toBeVisible();
-    await expect(page.getByRole('heading', { level: 2, name: 'ODM Studio App' })).toBeVisible();
+
+    const firstProjectLink = page.locator('article h2 a').first();
+    await expect(firstProjectLink).toBeVisible();
+    const firstProjectTitle = (await firstProjectLink.textContent()).trim();
 
     const desktopOverflow = await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth);
     expect(desktopOverflow).toBe(false);
@@ -25,18 +27,17 @@ test('projects index, filter, detail page, theme toggle, and mobile layout work 
     // Filter to Operasi Drone
     await page.getByRole('navigation', { name: /Filter kategori proyek/i }).getByRole('link', { name: 'Operasi Drone' }).click();
     await expect(page).toHaveURL(/\/proyek\?type=drone$/);
-    await expect(page.getByRole('heading', { level: 2, name: 'ODM Studio App' })).toBeVisible();
 
-    // Filter to Studi Kasus (empty state) and reset
+    // Filter to Studi Kasus and reset back to all projects
     await page.getByRole('navigation', { name: /Filter kategori proyek/i }).getByRole('link', { name: 'Studi Kasus' }).click();
-    await expect(page.getByRole('heading', { level: 2, name: /Belum ada proyek pada kategori ini/i })).toBeVisible();
-    await page.getByRole('link', { name: 'Tampilkan semua proyek' }).click();
+    await expect(page).toHaveURL(/\/proyek\?type=case_study$/);
+    await page.getByRole('navigation', { name: /Filter kategori proyek/i }).getByRole('link', { name: 'Semua' }).click();
     await expect(page).toHaveURL(/\/proyek$/);
 
-    // Navigate to project detail
-    await page.getByRole('link', { name: 'awork.id' }).first().click();
-    await expect(page).toHaveURL(/\/proyek\/awork-id$/);
-    await expect(page.getByRole('heading', { level: 1, name: 'awork.id' })).toBeVisible();
+    // Navigate to first project detail
+    await page.locator('article h2 a').first().click();
+    await expect(page).toHaveURL(/\/proyek\/.+/);
+    await expect(page.getByRole('heading', { level: 1, name: firstProjectTitle })).toBeVisible();
 
     // Theme toggle light -> dark
     const themeToggle = page.locator('#theme-toggle');

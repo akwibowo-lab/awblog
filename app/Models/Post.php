@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Str;
 
@@ -27,6 +28,7 @@ use Illuminate\Support\Str;
     'meta_title',
     'meta_description',
     'canonical_url',
+    'focus_keyword',
     'reading_time_minutes',
 ])]
 class Post extends Model
@@ -87,6 +89,44 @@ class Post extends Model
     public function tags(): BelongsToMany
     {
         return $this->belongsToMany(Tag::class);
+    }
+
+    /**
+     * Stored revisions for this post (kept up to PostRevision::MAX_PER_POST).
+     *
+     * @return HasMany<PostRevision, $this>
+     */
+    public function revisions(): HasMany
+    {
+        return $this->hasMany(PostRevision::class)->orderByDesc('id');
+    }
+
+    /**
+     * Snapshot the current post state into post_revisions and prune older ones beyond the limit.
+     */
+    public function recordRevision(?int $userId = null): PostRevision
+    {
+        $revision = $this->revisions()->create([
+            'user_id' => $userId,
+            'title' => $this->title,
+            'slug' => $this->slug,
+            'excerpt' => $this->excerpt,
+            'content_html' => $this->content_html,
+            'meta_title' => $this->meta_title,
+            'meta_description' => $this->meta_description,
+            'focus_keyword' => $this->focus_keyword,
+            'created_at' => now(),
+        ]);
+
+        $keepIds = $this->revisions()
+            ->limit(PostRevision::MAX_PER_POST)
+            ->pluck('id');
+
+        if ($keepIds->isNotEmpty()) {
+            $this->revisions()->whereNotIn('id', $keepIds)->delete();
+        }
+
+        return $revision;
     }
 
     /**

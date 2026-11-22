@@ -1,12 +1,19 @@
 <?php
 
+use App\Http\Controllers\Admin\PreviewController;
 use App\Http\Controllers\BlogController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\SeoController;
+use Filament\Http\Middleware\Authenticate as FilamentAuthenticate;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
+
+Route::middleware(FilamentAuthenticate::class)->prefix('admin/preview')->name('admin.preview.')->group(function (): void {
+    Route::get('/posts/{post}', [PreviewController::class, 'post'])->name('post');
+    Route::get('/projects/{project}', [PreviewController::class, 'project'])->name('project');
+});
 
 Route::get('/sitemap.xml', [SeoController::class, 'sitemap'])->name('seo.sitemap');
 Route::get('/feed', [SeoController::class, 'feed'])->name('seo.feed');

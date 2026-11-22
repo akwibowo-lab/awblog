@@ -121,3 +121,12 @@
 - Tes     : pint ✔ | pest ✔ (32 passed) | e2e ✔ (6 passed) | manual ✔
 - Approval: -
 - Lanjut  : Admin Filament 5 (9, termasuk upload thumbnail proyek & foto hero homepage) atau Staging Hostinger (1b)
+
+
+### S11 | 2026-11-22 | Admin Filament 5 & Backend Dinamis Homepage
+- Hasil   : selesai
+- Dikerjakan: konfigurasi `AdminPanelProvider` (logo AW Orbit, hook back-to-top) & `User::canAccessPanel`, buat 6 Resource (`Post`, `Category`, `Tag`, `Media`, `Project`, `Redirect`) + `MediaUploadService` (nama asli SEO + varian WebP) + `PostSeoAnalyzer` (focus keyword + alt text gambar), rute preview `/admin/preview/{posts,projects}`, sticky sidebar, auto-save draft + maks. 2 revisi artikel (`post_revisions`), serta `ManageHomepageSettings` (`site_settings`, foto hero/profil, PDF portofolio) yang terhubung ke `GetHomepageData` & `home.blade.php`
+- File utama: app/Providers/Filament/AdminPanelProvider.php, app/Filament/Resources/Posts/PostResource.php, app/Filament/Resources/Projects/ProjectResource.php, app/Filament/Pages/ManageHomepageSettings.php, app/Services/Seo/PostSeoAnalyzer.php, app/Models/SiteSetting.php, tests/Feature/FilamentAdminTest.php, tests/e2e/admin.spec.js
+- Tes     : pint ✔ | pest ✔ (40 passed) | e2e ✔ (7 passed, --workers=1) | manual ✔
+- Approval: -
+- Lanjut  : Staging Hostinger (1b, butuh approval) atau Performa & deploy (10)
