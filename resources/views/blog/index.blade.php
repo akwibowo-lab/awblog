@@ -179,7 +179,7 @@
                                     alt="{{ $leadMedia->altText($leadPost->title) }}"
                                     @if ($leadDims['width']) width="{{ $leadDims['width'] }}" @endif
                                     @if ($leadDims['height']) height="{{ $leadDims['height'] }}" @endif
-                                    loading="lazy"
+                                    fetchpriority="high"
                                     decoding="async"
                                     class="h-full w-full object-cover"
                                 >

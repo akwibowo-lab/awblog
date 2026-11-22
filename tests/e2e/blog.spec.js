@@ -16,10 +16,25 @@ test('blog index, search, category/tag filters, and article detail flow without 
     await expect(page).toHaveTitle(/Blog \| Akut Wibowo/);
     await expect(page.getByRole('heading', { level: 1, name: 'Catatan & Tulisan' })).toBeVisible();
 
-    const firstCardImg = page.locator('article img').first();
-    await expect(firstCardImg).toBeVisible();
-    await expect(firstCardImg).toHaveAttribute('loading', 'lazy');
-    await expect(firstCardImg).toHaveAttribute('src', /\.webp$/);
+    const leadImg = page.locator('article img').first();
+    await expect(leadImg).toBeVisible();
+    await expect(leadImg).toHaveAttribute('fetchpriority', 'high');
+    await expect(leadImg).toHaveAttribute('src', /\.webp$/);
+
+    const gridCardImg = page.locator('article img').nth(1);
+    await expect(gridCardImg).toHaveAttribute('loading', 'lazy');
+    await expect(gridCardImg).toHaveAttribute('src', /\.webp$/);
+
+    // Toggle dark/light theme and verify persistence across reload.
+    const themeToggle = page.locator('#theme-toggle');
+    await expect(themeToggle).toBeVisible();
+    await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
+    await themeToggle.click();
+    await expect(page.locator('html')).toHaveAttribute('data-theme', 'light');
+    await page.reload();
+    await expect(page.locator('html')).toHaveAttribute('data-theme', 'light');
+    await themeToggle.click();
+    await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
 
     // Navigate into a real category archive.
     const categoryLink = page.locator('nav[aria-label="Filter berdasarkan kategori"] a[href*="/category/"]').first();

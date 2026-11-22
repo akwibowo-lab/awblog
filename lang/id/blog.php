@@ -7,6 +7,8 @@ return [
         'primary_label' => 'Navigasi utama',
         'home' => 'Beranda',
         'blog' => 'Blog',
+        'theme_to_light' => 'Mode terang',
+        'theme_to_dark' => 'Mode gelap',
     ],
     'index' => [
         'heading' => 'Catatan & Tulisan',

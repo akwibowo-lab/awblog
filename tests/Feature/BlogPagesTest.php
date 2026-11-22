@@ -29,9 +29,24 @@ test('blog index lists published posts only with seo meta and webp lazy images',
         'title' => 'Panduan Pemetaan Drone RTK',
         'slug' => 'panduan-pemetaan-drone-rtk',
         'featured_media_id' => $media->id,
-        'published_at' => now()->subDays(2),
+        'published_at' => now()->subDay(),
     ]);
     $published->categories()->attach($category);
+
+    $olderMedia = Media::factory()->create([
+        'alt_text' => 'Foto udara proyek kedua',
+        'variants' => [
+            'medium' => 'media/2026/11/second-medium.webp',
+        ],
+    ]);
+
+    $older = Post::factory()->published()->create([
+        'title' => 'Kalibrasi Kompas Sebelum Terbang',
+        'slug' => 'kalibrasi-kompas-sebelum-terbang',
+        'featured_media_id' => $olderMedia->id,
+        'published_at' => now()->subDays(2),
+    ]);
+    $older->categories()->attach($category);
 
     Post::factory()->create([
         'title' => 'Draft Rahasia Tidak Terbit',
@@ -51,12 +66,16 @@ test('blog index lists published posts only with seo meta and webp lazy images',
     $response->assertOk()
         ->assertSee('Catatan &amp; Tulisan', false)
         ->assertSee('Panduan Pemetaan Drone RTK')
+        ->assertSee('Kalibrasi Kompas Sebelum Terbang')
         ->assertDontSee('Draft Rahasia Tidak Terbit')
         ->assertDontSee('Jadwal Masa Depan')
         ->assertSee('<link rel="canonical" href="'.route('blog.index').'">', false)
         ->assertSee('<meta property="og:type" content="website">', false)
         ->assertSee('coastal-large.webp')
+        ->assertSee('fetchpriority="high"', false)
+        ->assertSee('second-medium.webp')
         ->assertSee('loading="lazy"', false)
+        ->assertSee('id="theme-toggle"', false)
         ->assertSee('alt="Pemetaan udara area pesisir"', false);
 });
 

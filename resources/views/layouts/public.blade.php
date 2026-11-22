@@ -28,6 +28,18 @@
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Sora:wght@500;600;700&display=swap" rel="stylesheet">
 
+        <script>
+            (function () {
+                try {
+                    var stored = localStorage.getItem('awblog-theme');
+                    var theme = stored === 'light' || stored === 'dark' ? stored : 'dark';
+                    document.documentElement.setAttribute('data-theme', theme);
+                } catch (e) {
+                    document.documentElement.setAttribute('data-theme', 'dark');
+                }
+            })();
+        </script>
+
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
     <body class="min-h-screen bg-brand-bg text-brand-text font-sans antialiased flex flex-col">
@@ -79,6 +91,18 @@
                     >
                         {{ __('blog.nav.blog') }}
                     </a>
+
+                    <button
+                        id="theme-toggle"
+                        type="button"
+                        aria-pressed="false"
+                        aria-label="{{ __('blog.nav.theme_to_light') }}"
+                        data-label-light="{{ __('blog.nav.theme_to_light') }}"
+                        data-label-dark="{{ __('blog.nav.theme_to_dark') }}"
+                        class="inline-flex min-h-11 items-center gap-2 rounded-lg border border-brand-border bg-brand-surface px-3 text-xs font-medium text-brand-text hover:border-brand-accent transition-colors"
+                    >
+                        <span id="theme-toggle-text">{{ __('blog.nav.theme_to_light') }}</span>
+                    </button>
                 </nav>
             </div>
         </header>
@@ -111,5 +135,33 @@
                 </div>
             </div>
         </footer>
+
+        <script>
+            (function () {
+                var btn = document.getElementById('theme-toggle');
+                var label = document.getElementById('theme-toggle-text');
+                if (!btn || !label) return;
+
+                function sync(theme) {
+                    var isLight = theme === 'light';
+                    var nextText = isLight ? btn.dataset.labelDark : btn.dataset.labelLight;
+                    btn.setAttribute('aria-pressed', isLight ? 'true' : 'false');
+                    btn.setAttribute('aria-label', nextText);
+                    label.textContent = nextText;
+                }
+
+                sync(document.documentElement.getAttribute('data-theme') || 'dark');
+
+                btn.addEventListener('click', function () {
+                    var current = document.documentElement.getAttribute('data-theme') === 'light' ? 'light' : 'dark';
+                    var next = current === 'light' ? 'dark' : 'light';
+                    document.documentElement.setAttribute('data-theme', next);
+                    try {
+                        localStorage.setItem('awblog-theme', next);
+                    } catch (e) {}
+                    sync(next);
+                });
+            })();
+        </script>
     </body>
 </html>
