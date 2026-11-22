@@ -4,16 +4,16 @@
 
 ## Status Saat Ini
 
-- **Fase**: 2 — Skema DB inti + Lingkungan dev Proxmox (1 SOT) selesai
-- **Branch aktif**: `feat/db-schema` (siap merge ke `main` setelah pemilik setuju)
-- **Fitur sesi terakhir**: Setup LXC Proxmox `CT 103 (laravel-dev)` + migrasi repo `awblog` ke Remote SSH (menyusul Skema DB S2)
-- **Status**: selesai; `pint`, Pest (`DatabaseSchemaTest` + `HomeTest`), Playwright Chromium E2E, dan SSH dari PC & laptop ke `laravel-dev` lolos
+- **Fase**: 3 — Impor WordPress (`c71gfp8_*`) ke staging `wp_legacy` selesai
+- **Branch aktif**: `feat/wp-import` (siap merge ke `main` setelah pemilik setuju)
+- **Fitur sesi terakhir**: Impor WordPress (`c71gfp8_*`) ke staging `wp_legacy` & command `wp:import`
+- **Status**: selesai; `pint`, Pest (`12 passed`), Playwright (`1 passed`), dan impor nyata `wp_legacy` (60 tabel `c71gfp8_*`, 20 kategori, 471 tag, 242 post, 0 skipped) lolos
 - **Terakhir diperbarui**: 2026-11-22
 
 ## Fitur Sesi Berikutnya (hanya 1)
 
-- **Nama**: Impor WordPress (`c71gfp8_*`) ke staging `wp_legacy`
-- **Tujuan**: Menyiapkan database staging `wp_legacy` (hanya baca tabel prefix `c71gfp8_*`, abaikan `wpu0_*`) dan command/service impor artikel, kategori, tag, serta relasi ke skema Laravel dengan sanitasi HTML & pelestarian slug lama.
+- **Nama**: Impor media + penulisan ulang URL gambar
+- **Tujuan**: Mengekstrak arsip `akutwibowo-uploads-2026-11-12.tar.gz`, memproses/mengimpor media ke `storage` (thumbnail/medium/large + WebP), menghubungkan `featured_media_id`, dan menulis ulang URL `/wp-content/uploads/...` di `posts.content_html`.
 
 ## Keputusan yang Sudah Final
 
@@ -32,27 +32,26 @@
 
 ## Infrastruktur & Data Lama
 
-- **Workspace SOT (Remote SSH)**: `ssh://akut@laravel-dev/home/akut/projects/awblog` (`192.168.0.105`, MAC `BC:24:11:41:A0:77`; mobile Tailscale via `laravel-dev-ts` / `ProxyJump aw-server-ts`).
-- **DB dev Proxmox**: MariaDB 10.11 lokal (`awblog_dev`, `awblog_test`, user `awblog`, password di `~/.awblog_db_pass`).
-- **Repo GitHub**: `git@github.com:akwibowo-lab/awblog.git` (private, SSH key `akut@laravel-dev`).
-- **Arsip lokal PC/laptop (pasif)**: `D:\AntigravitySync\Project\AkutWibowo` — tidak dipakai edit lagi.
-- **Hostinger**: WordPress lama di `~/domains/akutwibowo.com/public_html`, prefix `c71gfp8_` (abaikan `wpu0_*`). Data WP disimpan di luar repo (`~/wp-legacy` di `laravel-dev`), hanya baca.
+- **Workspace SOT (Remote SSH)**: `ssh://akut@laravel-dev/home/akut/projects/awblog` (`192.168.0.105`).
+- **DB dev**: MariaDB/MySQL lokal (`akutwibowo` / `awblog_dev`) + staging `wp_legacy` (berisi 60 tabel prefix `c71gfp8_*` saja).
+- **Repo GitHub**: `git@github.com:akwibowo-lab/awblog.git` (private).
+- **Hostinger**: WordPress lama di `~/domains/akutwibowo.com/public_html`, prefix `c71gfp8_*` (abaikan `wpu0_*`). Data WP disimpan di luar repo (`D:\wp-legacy` / `~/wp-legacy`), hanya baca.
 
 ## Peta Repo Ringkas
 
 ```
-app/Enums/                                     ContentStatus, ProjectType
-app/Models/                                    User, Media, Category, Tag, Post, Project
-database/migrations/                           media, categories, tags, posts, category_post, post_tag, projects
-database/factories/                            MediaFactory, CategoryFactory, TagFactory, PostFactory, ProjectFactory
-tests/Feature/DatabaseSchemaTest.php           Pest test skema DB, relasi, constraint, scope
-tests/Feature/HomeTest.php                     Pest feature test GET /
-tests/e2e/home.spec.js                         Playwright E2E test /
+app/Console/Commands/ImportWordPressCommand.php  Command artisan wp:import (--dry-run, --limit)
+app/Services/WpImport/                           HtmlSanitizer, ImportResult, WordPressImporter
+app/Enums/ & app/Models/                         ContentStatus, ProjectType, User, Media, Category, Tag, Post, Project
+config/database.php                              Koneksi wp_legacy (prefix c71gfp8_)
+database/migrations/ & database/factories/       Skema konten inti + factory
+tests/Feature/WpImportTest.php                   Pest test sanitasi HTML, impor idempoten, dry-run
+tests/Feature/DatabaseSchemaTest.php & HomeTest  Pest test skema DB & /
+tests/e2e/home.spec.js                           Playwright E2E test /
 ```
 
 ## Backlog (urut prioritas, jangan dikerjakan tanpa dijadwalkan)
 
-3. Impor WordPress (`c71gfp8_*`) ke staging `wp_legacy`
 4. Impor media + penulisan ulang URL gambar
 5. Halaman blog (daftar, detail, kategori, tag, pencarian)
 1b. Staging Hostinger (subdomain, PHP 8.3 web dan CLI, deploy awal; butuh approval)
@@ -64,5 +63,5 @@ tests/e2e/home.spec.js                         Playwright E2E test /
 
 ## Catatan untuk Sesi Berikutnya
 
-- Buka proyek via **Remote-SSH** ke `laravel-dev` (`/home/akut/projects/awblog`) dari PC maupun laptop (keduanya sudah terverifikasi ✔).
-- Pastikan dump SQL `c71gfp8_*` dan arsip `uploads` (`akutwibowo-uploads-2026-11-12.tar.gz`) disalin ke `~/wp-legacy` di `laravel-dev` (di luar repo/document root) sebelum mulai impor WP.
+- Merge `feat/wp-import` ke `main` bila pemilik setuju.
+- Pastikan `akutwibowo-uploads-2026-11-12.tar.gz` tersedia di `D:\wp-legacy` (atau `~/wp-legacy` bila via Remote SSH `laravel-dev`) sebelum sesi impor media.

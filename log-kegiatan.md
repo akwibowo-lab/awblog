@@ -58,3 +58,12 @@
 - Tes     : pint ✔ | pest ✔ | e2e ✔ | manual n.a.
 - Approval: inspeksi read-only `aw-server` & `hostinger`; pembuatan & provisioning CT 103; static IP `192.168.0.105`; clone & install dependensi `awblog`
 - Lanjut  : Impor WordPress (`c71gfp8_*`) ke staging `wp_legacy` via Remote SSH di `laravel-dev`
+
+
+### S4 | 2026-11-22 | Impor WordPress (`c71gfp8_*`) ke staging `wp_legacy`
+- Hasil   : selesai
+- Dikerjakan: ekstrak & impor 60 tabel `c71gfp8_*` saja ke `wp_legacy`, tambah koneksi `wp_legacy`, buat `HtmlSanitizer` + `WordPressImporter` + command `wp:import`, uji impor penuh (20 kategori, 471 tag, 242 post, 0 skipped)
+- File utama: config/database.php, app/Services/WpImport/HtmlSanitizer.php, app/Services/WpImport/WordPressImporter.php, app/Console/Commands/ImportWordPressCommand.php, tests/Feature/WpImportTest.php
+- Tes     : pint ✔ | pest ✔ (12 passed) | e2e ✔ (1 passed) | manual n.a.
+- Approval: nyalakan MySQL lokal, buat DB `wp_legacy`, dan impor 60 tabel `c71gfp8_*` dari `D:\wp-legacy\u735114786_AwKdm2025.sql`
+- Lanjut  : Impor media + penulisan ulang URL gambar
