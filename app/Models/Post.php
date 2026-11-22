@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\ContentStatus;
+use App\Services\WpImport\ShortcodeCleaner;
 use Database\Factories\PostFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Builder;
@@ -179,11 +180,11 @@ class Post extends Model
     }
 
     /**
-     * Return rendered HTML with lazy loading guaranteed on inline images.
+     * Return rendered HTML with legacy shortcodes stripped and lazy loading guaranteed on inline images.
      */
     public function renderedContentHtml(): string
     {
-        $html = (string) $this->content_html;
+        $html = app(ShortcodeCleaner::class)->clean((string) $this->content_html);
 
         if ($html === '' || ! str_contains($html, '<img')) {
             return $html;

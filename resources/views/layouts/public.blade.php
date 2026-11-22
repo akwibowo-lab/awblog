@@ -56,13 +56,19 @@
                     href="{{ route('home') }}"
                     class="inline-flex min-h-11 items-center gap-3 text-brand-text hover:text-brand-accent transition-colors"
                 >
-                    <img
-                        src="{{ asset('branding/aw-orbit-dark.svg') }}"
-                        alt="Logo Akut Wibowo"
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="-60 -60 120 120"
                         width="32"
                         height="32"
+                        aria-hidden="true"
                         class="h-8 w-8 shrink-0"
                     >
+                        <path d="M47.2 -26.2 A54 54 0 1 1 26.2 -47.2" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+                        <circle cx="38.2" cy="-38.2" r="7" fill="var(--color-brand-accent)"/>
+                        <path d="M-35.5 18 L-20.5 -18 L-5.5 18 M-30.5 6 L-10.5 6" fill="none" stroke="currentColor" stroke-width="4" stroke-linejoin="miter"/>
+                        <path d="M-0.5 -18 L8.5 18 L17.5 -6.4 L26.5 18 L35.5 -18" fill="none" stroke="currentColor" stroke-width="4" stroke-linejoin="miter"/>
+                    </svg>
                     <span class="font-display text-base sm:text-lg font-semibold tracking-tight">
                         {{ __('blog.site_name') }}
                     </span>
@@ -97,11 +103,12 @@
                         type="button"
                         aria-pressed="false"
                         aria-label="{{ __('blog.nav.theme_to_light') }}"
+                        title="{{ __('blog.nav.theme_to_light') }}"
                         data-label-light="{{ __('blog.nav.theme_to_light') }}"
                         data-label-dark="{{ __('blog.nav.theme_to_dark') }}"
-                        class="inline-flex min-h-11 items-center gap-2 rounded-lg border border-brand-border bg-brand-surface px-3 text-xs font-medium text-brand-text hover:border-brand-accent transition-colors"
+                        class="inline-flex min-h-11 min-w-11 items-center justify-center rounded-lg border border-brand-border bg-brand-surface text-lg leading-none text-brand-text hover:border-brand-accent transition-colors"
                     >
-                        <span id="theme-toggle-text">{{ __('blog.nav.theme_to_light') }}</span>
+                        <span id="theme-toggle-icon" aria-hidden="true">☀️</span>
                     </button>
                 </nav>
             </div>
@@ -139,15 +146,16 @@
         <script>
             (function () {
                 var btn = document.getElementById('theme-toggle');
-                var label = document.getElementById('theme-toggle-text');
-                if (!btn || !label) return;
+                var icon = document.getElementById('theme-toggle-icon');
+                if (!btn || !icon) return;
 
                 function sync(theme) {
                     var isLight = theme === 'light';
                     var nextText = isLight ? btn.dataset.labelDark : btn.dataset.labelLight;
                     btn.setAttribute('aria-pressed', isLight ? 'true' : 'false');
                     btn.setAttribute('aria-label', nextText);
-                    label.textContent = nextText;
+                    btn.setAttribute('title', nextText);
+                    icon.textContent = isLight ? '🌙' : '☀️';
                 }
 
                 sync(document.documentElement.getAttribute('data-theme') || 'dark');

@@ -7,6 +7,7 @@ use App\Models\Post;
 use App\Models\Tag;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Http;
 
 uses(RefreshDatabase::class);
 
@@ -101,7 +102,7 @@ test('post detail preserves legacy root slug url with seo, og, hero image, and r
         'title' => 'Workflow Orthomosaic dengan WebODM',
         'slug' => 'workflow-orthomosaic-webodm',
         'featured_media_id' => $media->id,
-        'content_html' => '<p>Langkah pemrosesan foto udara.</p><img src="/storage/media/inline.webp" alt="Contoh inline">',
+        'content_html' => '<p>Langkah pemrosesan foto udara.</p>[caption id="attachment_3394" align="aligncenter" width="784"]<img src="/storage/media/inline.webp" alt="Contoh inline">[/caption][gallery bgs_gallery_image_size="full" bgs_gallery_title="Kegiatan" ids="3397,3396"]',
         'meta_title' => 'Workflow Orthomosaic WebODM',
         'meta_description' => 'Catatan praktis memproses foto udara dengan WebODM.',
     ]);
@@ -125,6 +126,9 @@ test('post detail preserves legacy root slug url with seo, og, hero image, and r
         ->assertSee('odm-large.webp')
         ->assertSee('fetchpriority="high"', false)
         ->assertSee('<img decoding="async" loading="lazy" src="/storage/media/inline.webp" alt="Contoh inline">', false)
+        ->assertDontSee('[caption')
+        ->assertDontSee('[/caption]')
+        ->assertDontSee('[gallery')
         ->assertSee('#WebODM')
         ->assertSee('Kalibrasi Kamera Drone untuk Pemetaan');
 });
@@ -219,4 +223,26 @@ test('blog index and post detail trigger zero lazy loading n+1 queries', functio
     } finally {
         Model::preventLazyLoading(false);
     }
+});
+
+test('wp:clean-content strips legacy shortcodes and removes broken images', function () {
+    Http::fake([
+        'https://example.com/ok.jpg' => Http::response('', 200, ['Content-Type' => 'image/jpeg']),
+        'https://example.com/broken.jpg' => Http::response('', 404, ['Content-Type' => 'text/html']),
+    ]);
+
+    $post = Post::factory()->published()->create([
+        'content_html' => '<p>Halo</p>[caption id="1"]<img src="https://example.com/ok.jpg" alt="OK">[/caption]<p><img src="https://example.com/broken.jpg" alt="Broken"></p>[gallery ids="1,2"]',
+    ]);
+
+    $this->artisan('wp:clean-content')
+        ->assertSuccessful();
+
+    $post->refresh();
+
+    expect($post->content_html)
+        ->toContain('https://example.com/ok.jpg')
+        ->not->toContain('https://example.com/broken.jpg')
+        ->not->toContain('[caption')
+        ->not->toContain('[gallery');
 });
