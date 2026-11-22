@@ -44,9 +44,9 @@
 
                     <p class="mt-3 font-mono text-xs text-brand-muted">
                         @if ($searchQuery !== '')
-                            {{ __('blog.index.search_results_summary', ['count' => $posts->total(), 'query' => $searchQuery]) }}
+                            {{ __('blog.index.search_results_summary', ['count' => $totalPosts ?? $posts->total(), 'query' => $searchQuery]) }}
                         @else
-                            {{ __('blog.index.total_posts', ['count' => $posts->total()]) }}
+                            {{ __('blog.index.total_posts', ['count' => $totalPosts ?? $posts->total()]) }}
                         @endif
                     </p>
                 </div>

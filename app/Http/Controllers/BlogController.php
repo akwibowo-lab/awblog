@@ -17,7 +17,9 @@ class BlogController extends Controller
         $this->useIndonesianLocale();
 
         $search = $request->searchQuery();
-        $posts = $listPosts->execute(search: $search);
+        $isDefaultIndex = $search === '';
+        $posts = $listPosts->execute(search: $search, leadOnFirstPage: $isDefaultIndex);
+        $totalPosts = $isDefaultIndex ? $listPosts->publishedCount() : $posts->total();
         $categories = $listPosts->categoriesWithPublishedCount();
         $tags = $listPosts->popularTags();
 
@@ -27,6 +29,7 @@ class BlogController extends Controller
 
         return view('blog.index', [
             'posts' => $posts,
+            'totalPosts' => $totalPosts,
             'categories' => $categories,
             'tags' => $tags,
             'activeCategory' => null,

@@ -89,8 +89,8 @@
 
 ### S7 | 2026-11-22 | Halaman blog publik (daftar, detail, kategori, tag, pencarian)
 - Hasil   : selesai
-- Dikerjakan: buat rute `/blog`, `/category/{slug}`, `/tag/{slug}`, `/{slug}` (mempertahankan URL WP), `BlogController`, `BlogIndexRequest`, `ListPublishedPosts` & `GetPublishedPost`, helper WebP `Media::variantUrl()`, teks ID `lang/id/blog.php`, layout publik + view blog bertoken brand + SEO/OG/kanonikal + anti N+1, serta tes Pest & Playwright
-- File utama: routes/web.php, app/Http/Controllers/BlogController.php, app/Actions/Blog/ListPublishedPosts.php, resources/views/blog/index.blade.php, tests/Feature/BlogPagesTest.php
-- Tes     : pint ✔ | pest ✔ (20 passed) | e2e ✔ (4 passed) | manual n.a.
+- Dikerjakan: buat rute `/blog`, `/category/{slug}`, `/tag/{slug}`, `/{slug}` (mempertahankan URL WP), `BlogController`, `BlogIndexRequest`, `ListPublishedPosts` (13 post hal. 1 / 12 post hal. 2+) & `GetPublishedPost`, `ShortcodeCleaner` + `wp:clean-content` (bersihkan shortcode & 18 gambar broken), toggle mode gelap/terang, layout & view blog bertoken brand, serta tes Pest & Playwright
+- File utama: routes/web.php, app/Http/Controllers/BlogController.php, app/Actions/Blog/ListPublishedPosts.php, app/Services/WpImport/ShortcodeCleaner.php, tests/Feature/BlogPagesTest.php
+- Tes     : pint ✔ | pest ✔ (22 passed) | e2e ✔ (4 passed) | manual ✔
 - Approval: -
 - Lanjut  : SEO (sitemap, RSS, redirect 301, robots.txt) atau staging Hostinger (1b)

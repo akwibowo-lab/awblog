@@ -102,7 +102,7 @@ test('post detail preserves legacy root slug url with seo, og, hero image, and r
         'title' => 'Workflow Orthomosaic dengan WebODM',
         'slug' => 'workflow-orthomosaic-webodm',
         'featured_media_id' => $media->id,
-        'content_html' => "Paragraf pertama catatan lapangan.\r\n\r\nParagraf kedua tentang kalibrasi.\r\n\r\n[caption id=\"attachment_3394\" align=\"aligncenter\" width=\"784\"]<img src=\"/storage/media/inline.webp\" alt=\"Contoh inline\">[/caption][gallery bgs_gallery_image_size=\"full\" bgs_gallery_title=\"Kegiatan\" ids=\"3397,3396\"]",
+        'content_html' => "Paragraf pertama catatan lapangan.\r\n\r\nReferensi :\r\n<ul>\r\n\t<li>Item satu</li>\r\n\t<li>Item dua</li>\r\n</ul>\r\n<ol>\r\n\t<li>Langkah satu</li>\r\n\t<li>Langkah dua</li>\r\n</ol>\r\n\r\n[caption id=\"attachment_3394\" align=\"aligncenter\" width=\"784\"]<img src=\"/storage/media/inline.webp\" alt=\"Contoh inline\">[/caption][gallery bgs_gallery_image_size=\"full\" bgs_gallery_title=\"Kegiatan\" ids=\"3397,3396\"]",
         'meta_title' => 'Workflow Orthomosaic WebODM',
         'meta_description' => 'Catatan praktis memproses foto udara dengan WebODM.',
     ]);
@@ -126,7 +126,9 @@ test('post detail preserves legacy root slug url with seo, og, hero image, and r
         ->assertSee('odm-large.webp')
         ->assertSee('fetchpriority="high"', false)
         ->assertSee('<p>Paragraf pertama catatan lapangan.</p>', false)
-        ->assertSee('<p>Paragraf kedua tentang kalibrasi.</p>', false)
+        ->assertSee('<p>Referensi :</p>', false)
+        ->assertSee("<li>Item satu</li>\n\t<li>Item dua</li>", false)
+        ->assertDontSee("</li><br>\n", false)
         ->assertSee('<img decoding="async" loading="lazy" src="/storage/media/inline.webp" alt="Contoh inline">', false)
         ->assertDontSee('[caption')
         ->assertDontSee('[/caption]')
@@ -247,4 +249,30 @@ test('wp:clean-content strips legacy shortcodes and removes broken images', func
         ->not->toContain('https://example.com/broken.jpg')
         ->not->toContain('[caption')
         ->not->toContain('[gallery');
+});
+
+test('blog index shows 13 posts on page 1 and 12 posts on page 2 without gaps or duplicates', function () {
+    $posts = collect();
+    for ($i = 1; $i <= 25; $i++) {
+        $posts->push(Post::factory()->published()->create([
+            'title' => sprintf('Artikel Urutan %02d', $i),
+            'slug' => sprintf('artikel-urutan-%02d', $i),
+            'published_at' => now()->subHours(30 - $i),
+        ]));
+    }
+
+    $page1 = $this->get('/blog');
+    $page1->assertOk()
+        ->assertSee('25 tulisan terbit')
+        ->assertSee('Artikel Urutan 25')
+        ->assertSee('Artikel Urutan 13')
+        ->assertDontSee('Artikel Urutan 12')
+        ->assertSee('Halaman 1 dari 2');
+
+    $page2 = $this->get('/blog?page=2');
+    $page2->assertOk()
+        ->assertSee('Artikel Urutan 12')
+        ->assertSee('Artikel Urutan 01')
+        ->assertDontSee('Artikel Urutan 13')
+        ->assertSee('Halaman 2 dari 2');
 });

@@ -38,15 +38,15 @@ class ShortcodeCleaner
             return '';
         }
 
-        $preBlocks = [];
-        $normalized = (string) preg_replace_callback('/<pre\b[^>]*>.*?<\/pre>/is', function (array $matches) use (&$preBlocks): string {
-            $key = '<!--PRE_BLOCK_'.count($preBlocks).'-->';
-            $preBlocks[$key] = $matches[0];
+        $protectedBlocks = [];
+        $normalized = (string) preg_replace_callback('/<(pre|ul|ol|table|figure|blockquote|h[1-6])\b[^>]*>.*?<\/\1>/is', function (array $matches) use (&$protectedBlocks): string {
+            $key = '<!--PROTECTED_BLOCK_'.count($protectedBlocks).'-->';
+            $protectedBlocks[$key] = $matches[0];
 
-            return $key;
+            return "\n\n".$key."\n\n";
         }, $normalized);
 
-        $blockPattern = '/^<(?:p|h[1-6]|ul|ol|blockquote|pre|table|figure|hr|div|section|article|aside|iframe|!--PRE_BLOCK_)\b/i';
+        $blockPattern = '/^<(?:p|h[1-6]|ul|ol|blockquote|pre|table|figure|hr|div|section|article|aside|iframe|!--PROTECTED_BLOCK_)\b/i';
         $chunks = preg_split('/\n{2,}/', $normalized) ?: [];
         $output = [];
 
@@ -66,8 +66,8 @@ class ShortcodeCleaner
 
         $result = implode("\n\n", $output);
 
-        if ($preBlocks !== []) {
-            $result = strtr($result, $preBlocks);
+        if ($protectedBlocks !== []) {
+            $result = strtr($result, $protectedBlocks);
         }
 
         return $result;

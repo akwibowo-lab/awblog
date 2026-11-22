@@ -7,7 +7,7 @@
 - **Fase**: 5 — Halaman blog publik (daftar, detail, kategori, tag, pencarian) selesai
 - **Branch aktif**: `feat/blog-pages` (bercabang dari `feat/media-import`; siap merge ke `main` setelah pemilik setuju)
 - **Fitur sesi terakhir**: Halaman blog publik (`/blog`, `/{slug}`, `/category/{slug}`, `/tag/{slug}`, pencarian `?q=`)
-- **Status**: menunggu cek manual pemilik (visual, responsif, & artikel asli WordPress); `pint`, Pest (`20 passed`), dan Playwright (`4 passed`) lolos
+- **Status**: selesai; URL lama artikel (`/{slug}`), kategori (`/category/{slug}`), dan tag (`/tag/{slug}`) dipertahankan, teks publik Bahasa Indonesia (`lang/id/blog.php`), toggle mode gelap/terang, pembersih shortcode & gambar broken (`wp:clean-content`), halaman 1 = 13 post (1 lead + 12 grid) & halaman 2+ = 12 post, SEO meta/OG/kanonikal, WebP lazy/priority, bebas N+1; `pint`, Pest (`22 passed`), Playwright (`4 passed`), dan cek manual pemilik ✔
 - **Terakhir diperbarui**: 2026-11-22
 
 ## Fitur Sesi Berikutnya (hanya 1)
@@ -64,7 +64,7 @@ tests/e2e/blog.spec.js                           Playwright E2E alur blog & resp
 
 ## Catatan untuk Sesi Berikutnya
 
-- Mulai sesi baru dari branch `feat/blog-pages` setelah cek manual pemilik selesai (atau merge branch fitur ke `main` terlebih dulu bila pemilik setuju).
+- Mulai sesi baru dari branch `feat/blog-pages` (atau merge branch fitur ke `main` terlebih dulu bila pemilik setuju).
 - Fitur UI berikutnya (Homepage portofolio, Halaman Proyek, Admin Filament) wajib menyertakan checklist cek manual pemilik sebelum finalisasi.
 - Perubahan struktur URL/redirect, `robots.txt`, sitemap, atau kanonikal wajib approval eksplisit pemilik sesuai `AGENTS.md` bagian 6.
 - 5 post lama masih punya referensi `wp-content/uploads` karena 8 file sumber hilang di arsip `2026-11-12` (bisa ditangani saat sesi SEO/redirect atau perbaikan konten).
