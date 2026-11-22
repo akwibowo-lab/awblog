@@ -67,3 +67,12 @@
 - Tes     : pint ✔ | pest ✔ (12 passed) | e2e ✔ (1 passed) | manual n.a.
 - Approval: nyalakan MySQL lokal, buat DB `wp_legacy`, dan impor 60 tabel `c71gfp8_*` dari `D:\wp-legacy\u735114786_AwKdm2025.sql`
 - Lanjut  : Impor media + penulisan ulang URL gambar
+
+
+### S5 | 2026-11-22 | Impor media + penulisan ulang URL gambar
+- Hasil   : selesai
+- Dikerjakan: buat `MediaProcessor` (varian thumbnail/medium/large WebP via GD), `MediaImporter`, `ContentUrlRewriter`, & command `wp:import-media`; buat symlink `public/storage`; jalankan impor penuh (1.477 media, 238 featured linked, 197 post, 842 URL/lazy, 8 file hilang)
+- File utama: app/Services/WpImport/MediaProcessor.php, app/Services/WpImport/MediaImporter.php, app/Services/WpImport/ContentUrlRewriter.php, app/Console/Commands/ImportMediaCommand.php, tests/Feature/MediaImportTest.php
+- Tes     : pint ✔ | pest ✔ (14 passed) | e2e ✔ (2 passed) | manual n.a.
+- Approval: tulis media & varian WebP ke `storage/app/public/media/`, `storage:link`, serta perbarui `media`, `posts.featured_media_id`, dan `posts.content_html`
+- Lanjut  : Halaman blog (daftar, detail, kategori, tag, pencarian)

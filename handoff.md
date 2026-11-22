@@ -4,16 +4,16 @@
 
 ## Status Saat Ini
 
-- **Fase**: 3 — Impor WordPress (`c71gfp8_*`) ke staging `wp_legacy` selesai
-- **Branch aktif**: `feat/wp-import` (siap merge ke `main` setelah pemilik setuju)
-- **Fitur sesi terakhir**: Impor WordPress (`c71gfp8_*`) ke staging `wp_legacy` & command `wp:import`
-- **Status**: selesai; `pint`, Pest (`12 passed`), Playwright (`1 passed`), dan impor nyata `wp_legacy` (60 tabel `c71gfp8_*`, 20 kategori, 471 tag, 242 post, 0 skipped) lolos
+- **Fase**: 4 — Impor media + penulisan ulang URL gambar selesai
+- **Branch aktif**: `feat/media-import` (bercabang dari `feat/wp-import`; siap merge ke `main` setelah pemilik setuju)
+- **Fitur sesi terakhir**: Impor media (`wp:import-media`), varian WebP, `featured_media_id`, & penulisan ulang URL `posts.content_html`
+- **Status**: selesai; `pint`, Pest (`14 passed`), Playwright (`2 passed`), dan impor nyata (1.477 media + varian WebP, 238 featured linked, 197 post diperbarui, 842 URL/lazy ditulis ulang, 8 file hilang dari arsip) lolos
 - **Terakhir diperbarui**: 2026-11-22
 
 ## Fitur Sesi Berikutnya (hanya 1)
 
-- **Nama**: Impor media + penulisan ulang URL gambar
-- **Tujuan**: Mengekstrak arsip `akutwibowo-uploads-2026-11-12.tar.gz`, memproses/mengimpor media ke `storage` (thumbnail/medium/large + WebP), menghubungkan `featured_media_id`, dan menulis ulang URL `/wp-content/uploads/...` di `posts.content_html`.
+- **Nama**: Halaman blog (daftar, detail, kategori, tag, pencarian)
+- **Tujuan**: Membangun halaman publik indeks blog (`/blog`), detail artikel (`/{slug}` mempertahankan URL lama), filter kategori & tag, dan pencarian, lengkap dengan SEO meta, Open Graph, kanonikal, dan gambar WebP `loading="lazy"`.
 
 ## Keputusan yang Sudah Final
 
@@ -40,19 +40,18 @@
 ## Peta Repo Ringkas
 
 ```
-app/Console/Commands/ImportWordPressCommand.php  Command artisan wp:import (--dry-run, --limit)
-app/Services/WpImport/                           HtmlSanitizer, ImportResult, WordPressImporter
+app/Console/Commands/ImportWordPressCommand.php  Command wp:import (--dry-run, --limit)
+app/Console/Commands/ImportMediaCommand.php      Command wp:import-media (--archive, --dry-run)
+app/Services/WpImport/                           HtmlSanitizer, WordPressImporter, MediaProcessor, MediaImporter, ContentUrlRewriter
 app/Enums/ & app/Models/                         ContentStatus, ProjectType, User, Media, Category, Tag, Post, Project
 config/database.php                              Koneksi wp_legacy (prefix c71gfp8_)
 database/migrations/ & database/factories/       Skema konten inti + factory
-tests/Feature/WpImportTest.php                   Pest test sanitasi HTML, impor idempoten, dry-run
-tests/Feature/DatabaseSchemaTest.php & HomeTest  Pest test skema DB & /
-tests/e2e/home.spec.js                           Playwright E2E test /
+tests/Feature/WpImportTest.php & MediaImportTest Pest test impor WP & media WebP
+tests/e2e/home.spec.js & media-import.spec.js    Playwright E2E test / & /storage/media/*.webp
 ```
 
 ## Backlog (urut prioritas, jangan dikerjakan tanpa dijadwalkan)
 
-4. Impor media + penulisan ulang URL gambar
 5. Halaman blog (daftar, detail, kategori, tag, pencarian)
 1b. Staging Hostinger (subdomain, PHP 8.3 web dan CLI, deploy awal; butuh approval)
 6. SEO: sitemap, RSS, redirect 301, meta, OG
@@ -63,5 +62,6 @@ tests/e2e/home.spec.js                           Playwright E2E test /
 
 ## Catatan untuk Sesi Berikutnya
 
-- Merge `feat/wp-import` ke `main` bila pemilik setuju.
-- Pastikan `akutwibowo-uploads-2026-11-12.tar.gz` tersedia di `D:\wp-legacy` (atau `~/wp-legacy` bila via Remote SSH `laravel-dev`) sebelum sesi impor media.
+- Merge `feat/wp-import` dan `feat/media-import` ke `main` bila pemilik setuju.
+- Jika migrasi ke `laravel-dev`, jalankan `php -d memory_limit=512M artisan wp:import-media --archive=~/wp-legacy/akutwibowo-uploads-2026-11-12.tar.gz` dan `php artisan storage:link`.
+- 5 post masih memiliki referensi `wp-content/uploads` karena 8 file sumber tidak ada di arsip `2026-11-12` (bisa ditangani/fallback saat sesi halaman blog jika perlu).
