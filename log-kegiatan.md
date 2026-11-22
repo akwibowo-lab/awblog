@@ -94,3 +94,12 @@
 - Tes     : pint ✔ | pest ✔ (22 passed) | e2e ✔ (4 passed) | manual ✔
 - Approval: -
 - Lanjut  : SEO (sitemap, RSS, redirect 301, robots.txt) atau staging Hostinger (1b)
+
+
+### S8 | 2026-11-22 | SEO: sitemap.xml dinamis, RSS feed /feed, robots.txt, dan redirect 301
+- Hasil   : selesai
+- Dikerjakan: buat migrasi & model `Redirect`, `ResolveLegacyRedirect`, middleware global `HandleLegacyRedirects` (aturan DB + pola WP lama `?p=`, `/YYYY/MM/DD/slug`, `/rss`, `/feed/rss2`, `/category|tag/.../feed`, `/author/...`), `SeoController` & view XML `/sitemap.xml` dan `/feed` (RSS 2.0), `<link rel="alternate">` di layout publik, perbarui `public/robots.txt`, serta tambah tes Pest & Playwright
+- File utama: app/Http/Controllers/SeoController.php, app/Actions/Seo/ResolveLegacyRedirect.php, app/Http/Middleware/HandleLegacyRedirects.php, app/Models/Redirect.php, routes/web.php, public/robots.txt, tests/Feature/SeoTest.php, tests/e2e/seo.spec.js
+- Tes     : pint ✔ | pest ✔ (26 passed) | e2e ✔ (5 passed) | manual n.a.
+- Approval: tambah rute `/sitemap.xml` dan `/feed`, perbarui `public/robots.txt`, serta tambah tabel & middleware redirect 301 URL lama
+- Lanjut  : Staging Hostinger (1b) atau Homepage portofolio (7)

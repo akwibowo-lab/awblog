@@ -59,5 +59,6 @@ return [
         'category_description' => 'Kumpulan tulisan pada kategori :name di blog Akut Wibowo.',
         'tag_title' => 'Tag :name | Blog Akut Wibowo',
         'tag_description' => 'Kumpulan tulisan bertag :name di blog Akut Wibowo.',
+        'rss_title' => 'Feed RSS | Akut Wibowo',
     ],
 ];

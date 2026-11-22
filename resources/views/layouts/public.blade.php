@@ -6,6 +6,7 @@
         <title>{{ $seoTitle ?? __('blog.site_name') }}</title>
         <meta name="description" content="{{ $seoDescription ?? __('blog.seo.index_description') }}">
         <link rel="canonical" href="{{ $canonicalUrl ?? url()->current() }}">
+        <link rel="alternate" type="application/rss+xml" title="{{ __('blog.seo.rss_title') }}" href="{{ route('seo.feed') }}">
 
         <meta property="og:site_name" content="{{ __('blog.site_name') }}">
         <meta property="og:locale" content="id_ID">

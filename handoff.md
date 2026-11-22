@@ -4,16 +4,16 @@
 
 ## Status Saat Ini
 
-- **Fase**: 5 — Halaman blog publik (daftar, detail, kategori, tag, pencarian) selesai
-- **Branch aktif**: `feat/blog-pages` (bercabang dari `feat/media-import`; siap merge ke `main` setelah pemilik setuju)
-- **Fitur sesi terakhir**: Halaman blog publik (`/blog`, `/{slug}`, `/category/{slug}`, `/tag/{slug}`, pencarian `?q=`)
-- **Status**: selesai; URL lama artikel (`/{slug}`), kategori (`/category/{slug}`), dan tag (`/tag/{slug}`) dipertahankan, teks publik Bahasa Indonesia (`lang/id/blog.php`), toggle mode gelap/terang, pembersih shortcode & gambar broken (`wp:clean-content`), halaman 1 = 13 post (1 lead + 12 grid) & halaman 2+ = 12 post, SEO meta/OG/kanonikal, WebP lazy/priority, bebas N+1; `pint`, Pest (`22 passed`), Playwright (`4 passed`), dan cek manual pemilik ✔
+- **Fase**: 6 — SEO (sitemap.xml dinamis, RSS feed `/feed`, `robots.txt`, redirect 301) selesai
+- **Branch aktif**: `feat/seo-redirects` (bercabang dari `feat/blog-pages`; siap merge ke `main` setelah pemilik setuju)
+- **Fitur sesi terakhir**: SEO (`sitemap.xml`, `/feed`, `robots.txt`, dan sistem redirect 301 URL lama)
+- **Status**: selesai; `/sitemap.xml` dinamis (beranda, `/blog`, post terbit, kategori & tag aktif), `/feed` RSS 2.0 (20 artikel terbaru + `<link rel="alternate">` di layout), `public/robots.txt`, tabel & model `Redirect` + middleware global `HandleLegacyRedirects` (aturan DB + pola WP lama `?p=`, `/YYYY/MM/DD/slug`, `/rss`, `/feed/rss2`, `/category|tag/.../feed`, `/author/...`); `pint`, Pest (`26 passed`), dan Playwright (`5 passed`) ✔
 - **Terakhir diperbarui**: 2026-11-22
 
 ## Fitur Sesi Berikutnya (hanya 1)
 
-- **Nama**: SEO: sitemap, RSS, redirect 301, meta & Open Graph lanjutan
-- **Tujuan**: Menambahkan `sitemap.xml` dinamis (post, kategori, tag, beranda), feed RSS (`/feed`), `robots.txt`, serta tabel/middleware redirect 301 untuk URL lama non-standar agar peringkat SEO WordPress terjaga.
+- **Nama**: Staging Hostinger (1b) atau Homepage Portofolio (7)
+- **Tujuan**: Menyiapkan deploy awal ke subdomain staging Hostinger (PHP 8.3 web & CLI, DB, cron) dengan approval pemilik, atau membangun homepage portofolio (hero, sertifikasi drone, galeri aplikasi, blog terbaru, kontak).
 
 ## Keputusan yang Sudah Final
 
@@ -41,30 +41,28 @@
 ## Peta Repo Ringkas
 
 ```
-routes/web.php                                   /, /blog, /category/{slug}, /tag/{slug}, /{slug}
+routes/web.php                                   /, /sitemap.xml, /feed, /blog, /category/{slug}, /tag/{slug}, /{slug}
 app/Http/Controllers/BlogController.php          Controller tipis halaman blog publik
-app/Http/Requests/BlogIndexRequest.php           Validasi query pencarian & paginasi
-app/Actions/Blog/                                ListPublishedPosts, GetPublishedPost
-app/Models/                                      Post (scopes/SEO/HTML), Media (variantUrl WebP), Category, Tag
-lang/id/blog.php                                 Teks tampilan publik blog Bahasa Indonesia
-resources/views/layouts/public.blade.php         Layout publik SEO/OG/navigasi/footer
-resources/views/blog/                            index, show, partials/post-card, partials/pagination
-tests/Feature/BlogPagesTest.php                  Pest test blog, SEO, filter, pencarian, anti N+1
-tests/e2e/blog.spec.js                           Playwright E2E alur blog & responsif mobile
+app/Http/Controllers/SeoController.php           Endpoint XML sitemap.xml & RSS feed /feed
+app/Http/Middleware/HandleLegacyRedirects.php    Middleware global redirect 301 URL lama
+app/Actions/Seo/ResolveLegacyRedirect.php        Resolver tabel redirects + pola WP lama
+app/Models/                                      Post, Media, Category, Tag, Redirect
+resources/views/seo/                             sitemap.blade.php, feed.blade.php
+public/robots.txt                                Aturan crawler + Sitemap URL
+tests/Feature/SeoTest.php                        Pest test sitemap, RSS, dan redirect 301
+tests/e2e/seo.spec.js                            Playwright E2E sitemap, RSS, robots.txt, 301
 ```
 
 ## Backlog (urut prioritas, jangan dikerjakan tanpa dijadwalkan)
 
-6. SEO: sitemap, RSS, redirect 301, meta, OG
 1b. Staging Hostinger (subdomain, PHP 8.3 web dan CLI, deploy awal; butuh approval)
 7. Homepage portofolio (hero, sertifikasi drone, galeri aplikasi, blog terbaru, kontak)
 8. Halaman Proyek/Aplikasi (awork.id, ODM Studio App)
-9. Admin Filament: kelola post, media, proyek, PDF portofolio
+9. Admin Filament: kelola post, media, proyek, PDF portofolio, redirects
 10. Performa & deploy
 
 ## Catatan untuk Sesi Berikutnya
 
-- Mulai sesi baru dari branch `feat/blog-pages` (atau merge branch fitur ke `main` terlebih dulu bila pemilik setuju).
+- Mulai sesi baru dari branch `feat/seo-redirects` (atau merge branch fitur ke `main` terlebih dulu bila pemilik setuju).
 - Fitur UI berikutnya (Homepage portofolio, Halaman Proyek, Admin Filament) wajib menyertakan checklist cek manual pemilik sebelum finalisasi.
-- Perubahan struktur URL/redirect, `robots.txt`, sitemap, atau kanonikal wajib approval eksplisit pemilik sesuai `AGENTS.md` bagian 6.
-- 5 post lama masih punya referensi `wp-content/uploads` karena 8 file sumber hilang di arsip `2026-11-12` (bisa ditangani saat sesi SEO/redirect atau perbaikan konten).
+- 5 post lama masih punya referensi `wp-content/uploads` karena 8 file sumber hilang di arsip `2026-11-12` (bisa dibersihkan di sesi perbaikan konten atau admin).
