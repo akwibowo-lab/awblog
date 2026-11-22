@@ -116,6 +116,7 @@
 .article-prose ol {
     padding-left: 1.5rem;
     color: var(--prose-body);
+    line-height: 1.65;
 }
 
 .article-prose ul {
@@ -127,7 +128,11 @@
 }
 
 .article-prose li + li {
-    margin-top: 0.45rem;
+    margin-top: 0;
+}
+
+.article-prose li > p {
+    margin: 0;
 }
 
 .article-prose blockquote {
