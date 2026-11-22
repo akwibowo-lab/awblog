@@ -76,3 +76,12 @@
 - Tes     : pint ✔ | pest ✔ (14 passed) | e2e ✔ (2 passed) | manual n.a.
 - Approval: tulis media & varian WebP ke `storage/app/public/media/`, `storage:link`, serta perbarui `media`, `posts.featured_media_id`, dan `posts.content_html`
 - Lanjut  : Halaman blog (daftar, detail, kategori, tag, pencarian)
+
+
+### S6 | 2026-11-22 | Sinkronisasi & setup penuh environment dev di Proxmox laravel-dev
+- Hasil   : selesai
+- Dikerjakan: sinkron branch `feat/media-import` di `laravel-dev` (`192.168.0.105`), buat DB `wp_legacy` & impor 60 tabel `c71gfp8_*` saja dari `~/wp-legacy/u735114786_AwKdm2025.sql`, jalankan `migrate`, `wp:import` (242 post, 20 kategori, 471 tag), `storage:link`, dan `wp:import-media` (1.477 media WebP, 238 featured, 197 post, 842 URL/lazy, 8 file hilang)
+- File utama: handoff.md, log-kegiatan.md
+- Tes     : pint ✔ | pest ✔ (14 passed) | e2e ✔ (2 passed) | manual n.a.
+- Approval: tambah variabel `WP_LEGACY_DB_*` di `.env`, buat DB `wp_legacy` + grant `SELECT` ke `awblog`, ekstrak & impor 60 tabel `c71gfp8_*`, jalankan `migrate`, `wp:import`, `storage:link`, dan `wp:import-media`
+- Lanjut  : Halaman blog (daftar, detail, kategori, tag, pencarian)

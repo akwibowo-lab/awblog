@@ -4,10 +4,10 @@
 
 ## Status Saat Ini
 
-- **Fase**: 4 — Impor media + penulisan ulang URL gambar selesai
+- **Fase**: 4 — Impor media + sinkronisasi penuh environment dev SOT (`laravel-dev`) selesai
 - **Branch aktif**: `feat/media-import` (bercabang dari `feat/wp-import`; siap merge ke `main` setelah pemilik setuju)
-- **Fitur sesi terakhir**: Impor media (`wp:import-media`), varian WebP, `featured_media_id`, & penulisan ulang URL `posts.content_html`
-- **Status**: selesai; `pint`, Pest (`14 passed`), Playwright (`2 passed`), dan impor nyata (1.477 media + varian WebP, 238 featured linked, 197 post diperbarui, 842 URL/lazy ditulis ulang, 8 file hilang dari arsip) lolos
+- **Fitur sesi terakhir**: Sinkronisasi & setup penuh environment dev `awblog` di Proxmox `laravel-dev` (`192.168.0.105`)
+- **Status**: selesai; SOT dev aktif di `laravel-dev` (60 tabel `c71gfp8_*` di `wp_legacy`, 242 post / 20 kategori / 471 tag, 1.477 media WebP, 238 featured linked, 197 post & 842 URL/lazy diperbarui, 8 file hilang); `pint`, Pest (`14 passed`), dan Playwright (`2 passed`) lolos
 - **Terakhir diperbarui**: 2026-11-22
 
 ## Fitur Sesi Berikutnya (hanya 1)
@@ -23,7 +23,7 @@
 | 2026-11-12 | WP lama: `/%postname%/`, 235 artikel, URL artikel/kategori/tag dipertahankan persis; selebihnya 301 | Jaga SEO |
 | 2026-11-10 | Domain `akutwibowo.com`; hosting Hostinger Premium; homepage bilingual ID/EN, blog ID | Target klien lokal + internasional |
 | 2026-11-12 | Brand: Akut Wibowo (AW Orbit); arah visual sinematik gelap; token di `resources/css/app.css` | Identitas drone |
-| 2026-11-22 | Dev 1 SOT di Proxmox LXC `CT 103 (laravel-dev)` IP `192.168.0.105` (Ubuntu 24.04, 4 vCPU, 4 GB RAM, 30 GB disk) | Hemat RAM host 8 GB, multi-project Laravel via Remote SSH |
+| 2026-11-22 | Dev 1 SOT aktif di Proxmox LXC `CT 103 (laravel-dev)` IP `192.168.0.105` (Ubuntu 24.04, 4 vCPU, 4 GB RAM, 30 GB disk) | Hemat RAM host 8 GB, multi-project Laravel via Remote SSH |
 
 ## Keputusan Terbuka (perlu jawaban pemilik)
 
@@ -32,10 +32,11 @@
 
 ## Infrastruktur & Data Lama
 
-- **Workspace SOT (Remote SSH)**: `ssh://akut@laravel-dev/home/akut/projects/awblog` (`192.168.0.105`).
-- **DB dev**: MariaDB/MySQL lokal (`akutwibowo` / `awblog_dev`) + staging `wp_legacy` (berisi 60 tabel prefix `c71gfp8_*` saja).
+- **Workspace SOT aktif (Remote SSH)**: `ssh://akut@laravel-dev/home/akut/projects/awblog` (`192.168.0.105`).
+- **DB dev Proxmox**: MariaDB 10.11 lokal (`awblog_dev`, `awblog_test`, user `awblog`) + staging `wp_legacy` (60 tabel prefix `c71gfp8_*`, read-only untuk `awblog`).
+- **Media lokal dev**: `storage/app/public/media/` (1.477 media + varian WebP) tersambung via `public/storage`.
 - **Repo GitHub**: `git@github.com:akwibowo-lab/awblog.git` (private).
-- **Hostinger**: WordPress lama di `~/domains/akutwibowo.com/public_html`, prefix `c71gfp8_*` (abaikan `wpu0_*`). Data WP disimpan di luar repo (`D:\wp-legacy` / `~/wp-legacy`), hanya baca.
+- **Hostinger**: WordPress lama di `~/domains/akutwibowo.com/public_html`, prefix `c71gfp8_*` (abaikan `wpu0_*`). Arsip hanya baca di `~/wp-legacy/` di `laravel-dev`.
 
 ## Peta Repo Ringkas
 
@@ -62,6 +63,5 @@ tests/e2e/home.spec.js & media-import.spec.js    Playwright E2E test / & /storag
 
 ## Catatan untuk Sesi Berikutnya
 
-- Merge `feat/wp-import` dan `feat/media-import` ke `main` bila pemilik setuju.
-- Jika migrasi ke `laravel-dev`, jalankan `php -d memory_limit=512M artisan wp:import-media --archive=~/wp-legacy/akutwibowo-uploads-2026-11-12.tar.gz` dan `php artisan storage:link`.
+- SOT dev aktif penuh di `laravel-dev` (`/home/akut/projects/awblog`); mulai sesi baru langsung dari sini (buat branch `feat/blog-pages` atau merge `feat/wp-import` & `feat/media-import` ke `main` dulu bila pemilik setuju).
 - 5 post masih memiliki referensi `wp-content/uploads` karena 8 file sumber tidak ada di arsip `2026-11-12` (bisa ditangani/fallback saat sesi halaman blog jika perlu).
