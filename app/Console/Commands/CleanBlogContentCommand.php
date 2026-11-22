@@ -82,8 +82,17 @@ class CleanBlogContentCommand extends Command
 
         if (str_starts_with($src, '/storage/')) {
             $rel = substr($src, strlen('/storage/'));
+            $path = storage_path('app/public/'.$rel);
 
-            return is_file(storage_path('app/public/'.$rel));
+            if (! is_file($path) || filesize($path) === 0) {
+                return false;
+            }
+
+            if (str_ends_with(strtolower($path), '.svg')) {
+                return true;
+            }
+
+            return @getimagesize($path) !== false;
         }
 
         if (! preg_match('/^https?:\/\//i', $src)) {
