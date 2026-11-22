@@ -4,16 +4,16 @@
 
 ## Status Saat Ini
 
-- **Fase**: 1 — Inisialisasi proyek selesai
-- **Branch aktif**: `feat/init-project`
-- **Fitur sesi terakhir**: Inisialisasi proyek Laravel 13 + Filament 5 + Tailwind v4 + Pest 4 + Playwright
-- **Status**: selesai, seluruh tes (pint, Pest `HomeTest`, Playwright `home.spec.js`) & verifikasi manual (`/` dan `/admin`) lolos
-- **Terakhir diperbarui**: 2026-11-17
+- **Fase**: 2 — Skema DB inti selesai
+- **Branch aktif**: `feat/db-schema`
+- **Fitur sesi terakhir**: Skema DB (`media`, `categories`, `tags`, `posts`, `projects`, `category_post`, `post_tag`) + Enum, Model, Relasi, Factory
+- **Status**: selesai, seluruh tes (pint, Pest `DatabaseSchemaTest` + `HomeTest`, Playwright `home.spec.js`) lolos
+- **Terakhir diperbarui**: 2026-11-22
 
 ## Fitur Sesi Berikutnya (hanya 1)
 
-- **Nama**: Setup lingkungan dev Proxmox + migrasi repo ke Remote SSH (1 Source of Truth)
-- **Tujuan**: Merancang dan menyiapkan lingkungan development di Proxmox (multi-project Laravel: PHP 8.3, Composer, Node, MySQL/MariaDB, Playwright/Chromium, Git + SSH) agar laptop & PC bekerja via Remote SSH dari 1 SOT, lalu memindahkan proyek ini ke sana. Mulai dengan diskusi arsitektur/topologi sebelum eksekusi.
+- **Nama**: Impor WordPress (`c71gfp8_*`) ke staging `wp_legacy`
+- **Tujuan**: Menyiapkan skema/koneksi staging `wp_legacy` (hanya baca tabel prefix `c71gfp8_*`) dan command/action impor artikel, kategori, tag, serta metadata media WordPress ke skema Laravel.
 
 ## Keputusan yang Sudah Final
 
@@ -38,10 +38,11 @@
 ## Peta Repo Ringkas
 
 ```
-app/Providers/Filament/AdminPanelProvider.php  Panel /admin
-public/branding/                               aw-orbit-dark.svg, favicon.svg
-resources/css/app.css                          Token brand Tailwind v4 + font Sora/Inter/JetBrains Mono
-resources/views/welcome.blade.php              Placeholder /
+app/Enums/                                     ContentStatus, ProjectType
+app/Models/                                    User, Media, Category, Tag, Post, Project
+database/migrations/                           media, categories, tags, posts, category_post, post_tag, projects
+database/factories/                            MediaFactory, CategoryFactory, TagFactory, PostFactory, ProjectFactory
+tests/Feature/DatabaseSchemaTest.php           Pest test skema DB, relasi, constraint, scope
 tests/Feature/HomeTest.php                     Pest feature test GET /
 tests/e2e/home.spec.js                         Playwright E2E test /
 ```
@@ -49,7 +50,6 @@ tests/e2e/home.spec.js                         Playwright E2E test /
 ## Backlog (urut prioritas, jangan dikerjakan tanpa dijadwalkan)
 
 1b. Staging Hostinger (subdomain, PHP 8.3 web dan CLI, deploy awal; butuh approval)
-2. Skema DB (`posts`, `categories`, `tags`, `media`, `projects`)
 3. Impor WordPress (`c71gfp8_*`) ke staging `wp_legacy`
 4. Impor media + penulisan ulang URL gambar
 5. Halaman blog (daftar, detail, kategori, tag, pencarian)
@@ -58,15 +58,6 @@ tests/e2e/home.spec.js                         Playwright E2E test /
 8. Halaman Proyek/Aplikasi (awork.id, ODM Studio App)
 9. Admin Filament: kelola post, media, proyek, PDF portofolio
 10. Performa & deploy
-
-## Perintah Penting
-
-```
-php artisan serve
-php artisan test --filter=<Fitur>
-php vendor/bin/pint
-npx playwright test
-```
 
 ## Catatan untuk Sesi Berikutnya
 
