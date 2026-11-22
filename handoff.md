@@ -4,16 +4,16 @@
 
 ## Status Saat Ini
 
-- **Fase**: 4 — Impor media + sinkronisasi penuh environment dev SOT (`laravel-dev`) selesai
-- **Branch aktif**: `feat/media-import` (bercabang dari `feat/wp-import`; siap merge ke `main` setelah pemilik setuju)
-- **Fitur sesi terakhir**: Sinkronisasi & setup penuh environment dev `awblog` di Proxmox `laravel-dev` (`192.168.0.105`)
-- **Status**: selesai; SOT dev aktif di `laravel-dev` (60 tabel `c71gfp8_*` di `wp_legacy`, 242 post / 20 kategori / 471 tag, 1.477 media WebP, 238 featured linked, 197 post & 842 URL/lazy diperbarui, 8 file hilang); `pint`, Pest (`14 passed`), dan Playwright (`2 passed`) lolos
+- **Fase**: 5 — Halaman blog publik (daftar, detail, kategori, tag, pencarian) selesai
+- **Branch aktif**: `feat/blog-pages` (bercabang dari `feat/media-import`; siap merge ke `main` setelah pemilik setuju)
+- **Fitur sesi terakhir**: Halaman blog publik (`/blog`, `/{slug}`, `/category/{slug}`, `/tag/{slug}`, pencarian `?q=`)
+- **Status**: selesai; URL lama artikel (`/{slug}`), kategori (`/category/{slug}`), dan tag (`/tag/{slug}`) dipertahankan, teks publik Bahasa Indonesia (`lang/id/blog.php`), SEO meta/OG/kanonikal, gambar WebP `loading="lazy"` (hero detail `fetchpriority="high"`), bebas N+1; `pint`, Pest (`20 passed`), dan Playwright (`4 passed`) lolos
 - **Terakhir diperbarui**: 2026-11-22
 
 ## Fitur Sesi Berikutnya (hanya 1)
 
-- **Nama**: Halaman blog (daftar, detail, kategori, tag, pencarian)
-- **Tujuan**: Membangun halaman publik indeks blog (`/blog`), detail artikel (`/{slug}` mempertahankan URL lama), filter kategori & tag, dan pencarian, lengkap dengan SEO meta, Open Graph, kanonikal, dan gambar WebP `loading="lazy"`.
+- **Nama**: SEO: sitemap, RSS, redirect 301, meta & Open Graph lanjutan
+- **Tujuan**: Menambahkan `sitemap.xml` dinamis (post, kategori, tag, beranda), feed RSS (`/feed`), `robots.txt`, serta tabel/middleware redirect 301 untuk URL lama non-standar agar peringkat SEO WordPress terjaga.
 
 ## Keputusan yang Sudah Final
 
@@ -41,21 +41,22 @@
 ## Peta Repo Ringkas
 
 ```
-app/Console/Commands/ImportWordPressCommand.php  Command wp:import (--dry-run, --limit)
-app/Console/Commands/ImportMediaCommand.php      Command wp:import-media (--archive, --dry-run)
-app/Services/WpImport/                           HtmlSanitizer, WordPressImporter, MediaProcessor, MediaImporter, ContentUrlRewriter
-app/Enums/ & app/Models/                         ContentStatus, ProjectType, User, Media, Category, Tag, Post, Project
-config/database.php                              Koneksi wp_legacy (prefix c71gfp8_)
-database/migrations/ & database/factories/       Skema konten inti + factory
-tests/Feature/WpImportTest.php & MediaImportTest Pest test impor WP & media WebP
-tests/e2e/home.spec.js & media-import.spec.js    Playwright E2E test / & /storage/media/*.webp
+routes/web.php                                   /, /blog, /category/{slug}, /tag/{slug}, /{slug}
+app/Http/Controllers/BlogController.php          Controller tipis halaman blog publik
+app/Http/Requests/BlogIndexRequest.php           Validasi query pencarian & paginasi
+app/Actions/Blog/                                ListPublishedPosts, GetPublishedPost
+app/Models/                                      Post (scopes/SEO/HTML), Media (variantUrl WebP), Category, Tag
+lang/id/blog.php                                 Teks tampilan publik blog Bahasa Indonesia
+resources/views/layouts/public.blade.php         Layout publik SEO/OG/navigasi/footer
+resources/views/blog/                            index, show, partials/post-card, partials/pagination
+tests/Feature/BlogPagesTest.php                  Pest test blog, SEO, filter, pencarian, anti N+1
+tests/e2e/blog.spec.js                           Playwright E2E alur blog & responsif mobile
 ```
 
 ## Backlog (urut prioritas, jangan dikerjakan tanpa dijadwalkan)
 
-5. Halaman blog (daftar, detail, kategori, tag, pencarian)
-1b. Staging Hostinger (subdomain, PHP 8.3 web dan CLI, deploy awal; butuh approval)
 6. SEO: sitemap, RSS, redirect 301, meta, OG
+1b. Staging Hostinger (subdomain, PHP 8.3 web dan CLI, deploy awal; butuh approval)
 7. Homepage portofolio (hero, sertifikasi drone, galeri aplikasi, blog terbaru, kontak)
 8. Halaman Proyek/Aplikasi (awork.id, ODM Studio App)
 9. Admin Filament: kelola post, media, proyek, PDF portofolio
@@ -63,5 +64,6 @@ tests/e2e/home.spec.js & media-import.spec.js    Playwright E2E test / & /storag
 
 ## Catatan untuk Sesi Berikutnya
 
-- SOT dev aktif penuh di `laravel-dev` (`/home/akut/projects/awblog`); mulai sesi baru langsung dari sini (buat branch `feat/blog-pages` atau merge `feat/wp-import` & `feat/media-import` ke `main` dulu bila pemilik setuju).
-- 5 post masih memiliki referensi `wp-content/uploads` karena 8 file sumber tidak ada di arsip `2026-11-12` (bisa ditangani/fallback saat sesi halaman blog jika perlu).
+- Mulai sesi baru dari branch `feat/blog-pages` (atau merge branch fitur ke `main` terlebih dulu bila pemilik setuju).
+- Perubahan struktur URL/redirect, `robots.txt`, sitemap, atau kanonikal wajib approval eksplisit pemilik sesuai `AGENTS.md` bagian 6.
+- 5 post lama masih punya referensi `wp-content/uploads` karena 8 file sumber hilang di arsip `2026-11-12` (bisa ditangani saat sesi SEO/redirect atau perbaikan konten).
