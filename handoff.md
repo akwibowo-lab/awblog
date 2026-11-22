@@ -12,8 +12,8 @@
 
 ## Fitur Sesi Berikutnya (hanya 1)
 
-- **Nama**: Impor WordPress (`c71gfp8_*`) ke staging `wp_legacy`
-- **Tujuan**: Menyiapkan skema/koneksi staging `wp_legacy` (hanya baca tabel prefix `c71gfp8_*`) dan command/action impor artikel, kategori, tag, serta metadata media WordPress ke skema Laravel.
+- **Nama**: Setup lingkungan dev Proxmox + migrasi repo ke Remote SSH (1 Source of Truth)
+- **Tujuan**: Merancang dan menyiapkan lingkungan development di Proxmox (multi-project Laravel: PHP 8.3, Composer, Node, MySQL/MariaDB, Playwright/Chromium, Git + SSH) agar laptop & PC bekerja via Remote SSH dari 1 SOT, lalu clone repo `awblog` ke sana. Mulai dengan diskusi arsitektur/topologi sebelum eksekusi.
 
 ## Keputusan yang Sudah Final
 
@@ -49,10 +49,11 @@ tests/e2e/home.spec.js                         Playwright E2E test /
 
 ## Backlog (urut prioritas, jangan dikerjakan tanpa dijadwalkan)
 
-1b. Staging Hostinger (subdomain, PHP 8.3 web dan CLI, deploy awal; butuh approval)
+2a. Setup lingkungan dev Proxmox + Remote SSH (1 Source of Truth)
 3. Impor WordPress (`c71gfp8_*`) ke staging `wp_legacy`
 4. Impor media + penulisan ulang URL gambar
 5. Halaman blog (daftar, detail, kategori, tag, pencarian)
+1b. Staging Hostinger (subdomain, PHP 8.3 web dan CLI, deploy awal; butuh approval)
 6. SEO: sitemap, RSS, redirect 301, meta, OG
 7. Homepage portofolio (hero, sertifikasi drone, galeri aplikasi, blog terbaru, kontak)
 8. Halaman Proyek/Aplikasi (awork.id, ODM Studio App)
