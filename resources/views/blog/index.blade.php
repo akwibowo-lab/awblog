@@ -173,7 +173,7 @@
                 <article class="mb-10 overflow-hidden rounded-xl border border-brand-border bg-brand-surface transition-colors hover:border-brand-accent/60">
                     <div class="grid lg:grid-cols-12">
                         @if ($leadMedia)
-                            <a href="{{ $leadPost->publicUrl() }}" class="block aspect-[16/10] lg:aspect-auto lg:col-span-7 overflow-hidden bg-brand-bg">
+                            <a href="{{ $leadPost->publicUrl() }}" class="block aspect-video w-full lg:col-span-7 lg:self-center overflow-hidden bg-brand-bg">
                                 <img
                                     src="{{ $leadMedia->variantUrl('large') }}"
                                     alt="{{ $leadMedia->altText($leadPost->title) }}"

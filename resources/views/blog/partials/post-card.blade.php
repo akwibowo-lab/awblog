@@ -6,7 +6,7 @@
 
 <article class="flex h-full flex-col overflow-hidden rounded-xl border border-brand-border bg-brand-surface transition-colors hover:border-brand-accent/60">
     @if ($media)
-        <a href="{{ $post->publicUrl() }}" class="block aspect-[16/10] w-full overflow-hidden bg-brand-bg">
+        <a href="{{ $post->publicUrl() }}" class="block aspect-video w-full overflow-hidden bg-brand-bg">
             <img
                 src="{{ $media->variantUrl('medium') }}"
                 alt="{{ $media->altText($post->title) }}"

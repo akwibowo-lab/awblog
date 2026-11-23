@@ -41,13 +41,13 @@
                     <img
                         src="{{ $heroImageUrl }}"
                         alt="{{ $settings['hero_image_alt'] }}"
-                        width="220"
-                        height="220"
+                        width="{{ $hasCustomHeroImage ? 384 : 220 }}"
+                        height="{{ $hasCustomHeroImage ? 216 : 220 }}"
                         fetchpriority="high"
                         decoding="sync"
                         @class([
-                            'h-36 w-36 sm:h-48 sm:w-48 lg:h-52 lg:w-52',
-                            'rounded-2xl border border-brand-border object-cover shadow-lg' => $hasCustomHeroImage,
+                            'h-36 w-36 sm:h-48 sm:w-48 lg:h-52 lg:w-52' => ! $hasCustomHeroImage,
+                            'aspect-video w-full max-w-sm rounded-2xl border border-brand-border object-cover shadow-lg' => $hasCustomHeroImage,
                         ])
                     >
                 </div>
@@ -140,8 +140,8 @@
                             @if ($media)
                                 <div @class([
                                     'overflow-hidden bg-brand-surface',
-                                    'aspect-[16/10] w-full' => ! $isLead,
-                                    'aspect-[16/10] lg:aspect-auto lg:col-span-6 lg:h-full' => $isLead,
+                                    'aspect-video w-full' => ! $isLead,
+                                    'aspect-video w-full lg:col-span-6 lg:self-center' => $isLead,
                                 ])>
                                     <img
                                         src="{{ $media->variantUrl('medium') }}"

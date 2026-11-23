@@ -65,8 +65,8 @@
                                     href="{{ route('projects.show', ['slug' => $project['slug']]) }}"
                                     @class([
                                         'block overflow-hidden bg-brand-bg',
-                                        'aspect-[16/10] w-full' => ! $isLead,
-                                        'aspect-[16/10] lg:aspect-auto lg:col-span-6 lg:h-full' => $isLead,
+                                        'aspect-video w-full' => ! $isLead,
+                                        'aspect-video w-full lg:col-span-6 lg:self-center' => $isLead,
                                     ])
                                 >
                                     <img
