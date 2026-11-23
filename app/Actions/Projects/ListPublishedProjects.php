@@ -4,10 +4,13 @@ namespace App\Actions\Projects;
 
 use App\Enums\ProjectType;
 use App\Models\Project;
+use App\Services\Cache\ContentCache;
 use Illuminate\Support\Collection;
 
 class ListPublishedProjects
 {
+    private const CACHE_TTL_SECONDS = 1800;
+
     private const ALLOWED_DESCRIPTION_TAGS = '<p><br><h2><h3><h4><ul><ol><li><strong><em><a><code><pre><blockquote>';
 
     /**
@@ -18,20 +21,33 @@ class ListPublishedProjects
      */
     public function execute(?ProjectType $typeFilter = null): Collection
     {
-        $hasPublishedInDb = Project::query()->published()->exists();
+        $hostKey = md5(request()->getSchemeAndHttpHost());
 
-        if ($hasPublishedInDb) {
-            $query = Project::query()
+        /** @var list<array<string, mixed>> $normalized */
+        $normalized = ContentCache::remember(
+            'projects',
+            "published_normalized.{$hostKey}",
+            self::CACHE_TTL_SECONDS,
+            fn (): array => Project::query()
                 ->published()
                 ->with('featuredMedia')
                 ->orderByDesc('is_featured')
-                ->ordered();
+                ->ordered()
+                ->get()
+                ->map(fn (Project $project): array => $this->normalizeModel($project))
+                ->all()
+        );
+
+        if ($normalized !== []) {
+            $collection = collect($normalized);
 
             if ($typeFilter !== null) {
-                $query->where('type', $typeFilter->value);
+                return $collection
+                    ->filter(static fn (array $item): bool => $item['type'] === $typeFilter->value)
+                    ->values();
             }
 
-            return $query->get()->map(fn (Project $project): array => $this->normalizeModel($project));
+            return $collection;
         }
 
         $fallbacks = $this->fallbackItems();

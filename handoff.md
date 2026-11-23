@@ -4,16 +4,16 @@
 
 ## Status Saat Ini
 
-- **Fase**: 1b — Staging Hostinger selesai
-- **Branch aktif**: `feat/staging-hostinger` (bercabang dari `feat/filament-admin`)
-- **Fitur sesi terakhir**: Staging Hostinger (`new.akutwibowo.com` di `~/apps/awblog-staging`, docroot symlink `public_html/new`, PHP 8.3.37 web & CLI, DB `u735114786_newAW` termigrasi, `storage:link`, cron `schedule:run` + `queue:work --stop-when-empty`)
-- **Status**: selesai; origin Hostinger `http://new.akutwibowo.com/` & `/up` `200 OK` (menunggu instalasi SSL Hostinger selesai untuk HTTPS Cloudflare), `pint` ✔, Pest (`44 passed`), Playwright (`8 passed, --workers=1`) ✔
+- **Fase**: 1b — Performa, Staging HTTPS, & Merge `main` selesai
+- **Branch aktif**: `main` (hasil merge `feat/staging-hostinger`)
+- **Fitur sesi terakhir**: Performa & Deploy (10) — caching HTML beranda, query blog/proyek, & XML sitemap/RSS via `ContentCache` + invalidasi otomatis model event di `AppServiceProvider`, header `Cache-Control` aset statis di `public/.htaccess`, verifikasi LCP (`fetchpriority="high"`) & WebP (`loading="lazy"`), verifikasi HTTPS `https://new.akutwibowo.com` (`HTTP/2 200`), deploy ke staging, & merge ke `main`
+- **Status**: selesai; `pint` ✔, Pest (`48 passed`) ✔, Playwright (`9 passed, --workers=1`) ✔, `https://new.akutwibowo.com/` & `/up` `HTTP/2 200` ✔
 - **Terakhir diperbarui**: 2026-11-23
 
 ## Fitur Sesi Berikutnya (hanya 1)
 
-- **Nama**: Performa & Deploy (10)
-- **Tujuan**: Optimasi performa (caching halaman/query, verifikasi LCP/WebP), verifikasi akhir HTTPS staging `new.akutwibowo.com` (serta impor data/media staging jika diperlukan), dan merge ke `main`.
+- **Nama**: Impor Data & Media WordPress ke Staging (`new.akutwibowo.com`)
+- **Tujuan**: Impor 235 artikel, kategori, tag, redirect, dan media WebP (`storage/app/public/media/`) dari dev `laravel-dev` ke DB staging `u735114786_newAW` & `~/apps/awblog-staging/storage/app/public/media/` (serta buat akun admin staging) agar blog staging terisi penuh untuk review sebelum cutover produksi.
 
 ## Keputusan yang Sudah Final
 
@@ -26,37 +26,37 @@
 | 2026-11-22 | Dev 1 SOT aktif di Proxmox LXC `CT 103 (laravel-dev)` IP `192.168.0.105` (Ubuntu 24.04, 4 vCPU, 4 GB RAM, 30 GB disk) | Hemat RAM host 8 GB, multi-project Laravel via Remote SSH |
 | 2026-11-22 | Kontak homepage: WhatsApp `+6289623084000` (`wa.me/6289623084000`) & email `akwibowo@gmail.com` (tidak ditampilkan eksplisit di tombol) | Permintaan pemilik |
 | 2026-11-23 | Subdomain staging `new.akutwibowo.com` di Hostinger (`~/apps/awblog-staging`, deploy via `rsync` dari `laravel-dev` + `scripts/deploy-staging.sh`) | Isolasi penuh dari WP produksi & `galangbahari.com`; Hostinger tanpa Node.js |
+| 2026-11-23 | `ContentCache` berbasis domain-version (`CACHE_STORE=file`, aman untuk `serializable_classes => false`) | Kompatibel shared hosting tanpa Redis |
 
 ## Keputusan Terbuka (perlu jawaban pemilik)
 
 - [ ] Host kanonik (`www.akutwibowo.com`), URL gambar lama `/wp-content/uploads/...`, metode bahasa (`/` + `/en/`), letak indeks blog (`/blog`).
-- [ ] Konfirmasi SSL Hostinger untuk `new.akutwibowo.com` aktif (agar `https://new.akutwibowo.com` tidak `525`).
 
 ## Infrastruktur & Data Lama
 
 - **Workspace SOT aktif (Remote SSH)**: `ssh://akut@laravel-dev/home/akut/projects/awblog` (`192.168.0.105`).
-- **Staging Hostinger**: `ssh -p 65002 u735114786@145.79.14.199`, app `~/apps/awblog-staging`, docroot `~/domains/akutwibowo.com/public_html/new` (symlink), DB `u735114786_newAW`, PHP 8.3.37 (`/opt/alt/php83/usr/bin/php`).
+- **Staging Hostinger**: `ssh -p 65002 u735114786@145.79.14.199`, app `~/apps/awblog-staging`, docroot `~/domains/akutwibowo.com/public_html/new` (symlink), DB `u735114786_newAW` (baru termigrasi, belum terisi data WP), PHP 8.3.37.
 - **DB dev Proxmox**: MariaDB 10.11 lokal (`awblog_dev`, `awblog_test`, user `awblog`) + staging `wp_legacy` (60 tabel prefix `c71gfp8_*`, read-only untuk `awblog`).
 - **Media lokal dev**: `storage/app/public/media/` (1.477 media + varian WebP) tersambung via `public/storage`.
 - **Repo GitHub**: `git@github.com:akwibowo-lab/awblog.git` (private).
 
-## Peta Repo Ringkas (Tambahan S12)
+## Peta Repo Ringkas (Tambahan S13)
 
 ```
-.env.staging.example                   Template env staging Hostinger (new.akutwibowo.com)
-scripts/deploy-staging.sh              Skrip deploy idempoten PHP 8.3 CLI
-docs/deploy-hostinger.md               Panduan setup subdomain, cron, & rollback Hostinger
-routes/console.php                     Schedule queue:work --stop-when-empty setiap menit
-tests/Feature/StagingHealthTest.php    Tes Pest kesiapan staging & scheduler
-tests/e2e/health.spec.js               Tes Playwright endpoint /up
+app/Services/Cache/ContentCache.php       Cache helper berbasis domain-version (file/db safe)
+app/Providers/AppServiceProvider.php      Invalidasi cache otomatis via model events
+public/.htaccess                          Header Cache-Control aset statis (.webp, .css, .js)
+tests/Feature/PerformanceCacheTest.php    Tes Pest cache hit/invalidation & LCP/WebP
+tests/e2e/performance.spec.js             Tes Playwright LCP fetchpriority & lazy loading
 ```
 
 ## Backlog (urut prioritas, jangan dikerjakan tanpa dijadwalkan)
 
-10. Performa & deploy (caching halaman/query, verifikasi LCP/WebP, merge `main`)
+- Impor data & media WordPress ke staging `new.akutwibowo.com` + buat akun admin staging
+- Cutover DNS/domain produksi `akutwibowo.com` setelah review staging selesai
 
 ## Catatan untuk Sesi Berikutnya
 
-- Mulai sesi baru dari branch `feat/staging-hostinger` (atau setelah cek `https://new.akutwibowo.com` aktif SSL-nya).
-- Di Playwright pada `laravel-dev`, jalankan `npx playwright test --workers=1` agar `php artisan serve` tidak timeout saat paralel.
-- 5 post lama masih punya referensi `wp-content/uploads` karena 8 file sumber hilang di arsip `2026-11-12` (bisa dibersihkan via `/admin/posts`).
+- Mulai dari branch `main` (buat branch baru bila perlu perubahan kode).
+- Database staging `u735114786_newAW` saat ini masih kosong (hanya tabel hasil `migrate --force`), sehingga blog staging tampil kosong sampai impor data & `rsync` media dilakukan.
+- Di Playwright pada `laravel-dev`, jalankan `npx playwright test --workers=1`.

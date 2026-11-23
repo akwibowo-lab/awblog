@@ -5,6 +5,7 @@ namespace App\Actions\Blog;
 use App\Models\Category;
 use App\Models\Post;
 use App\Models\Tag;
+use App\Services\Cache\ContentCache;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -13,6 +14,8 @@ use Illuminate\Pagination\Paginator;
 
 class ListPublishedPosts
 {
+    private const CACHE_TTL_SECONDS = 1800;
+
     /**
      * @return LengthAwarePaginator<int, Post>
      */
@@ -73,7 +76,12 @@ class ListPublishedPosts
 
     public function publishedCount(): int
     {
-        return Post::query()->published()->count();
+        return ContentCache::remember(
+            'blog',
+            'published_count',
+            self::CACHE_TTL_SECONDS,
+            static fn (): int => Post::query()->published()->count()
+        );
     }
 
     /**
@@ -81,17 +89,32 @@ class ListPublishedPosts
      */
     public function categoriesWithPublishedCount(): Collection
     {
-        return Category::query()
-            ->select(['id', 'name', 'slug'])
-            ->whereHas('posts', function (Builder $builder): void {
-                $builder->published();
-            })
-            ->withCount(['posts' => function (Builder $builder): void {
-                $builder->published();
-            }])
-            ->orderByDesc('posts_count')
-            ->orderBy('name')
-            ->get();
+        /** @var list<array{id: int, name: string, slug: string, posts_count: int}> $rows */
+        $rows = ContentCache::remember(
+            'blog',
+            'categories_with_count',
+            self::CACHE_TTL_SECONDS,
+            static fn (): array => Category::query()
+                ->select(['id', 'name', 'slug'])
+                ->whereHas('posts', function (Builder $builder): void {
+                    $builder->published();
+                })
+                ->withCount(['posts' => function (Builder $builder): void {
+                    $builder->published();
+                }])
+                ->orderByDesc('posts_count')
+                ->orderBy('name')
+                ->get()
+                ->map(static fn (Category $category): array => [
+                    'id' => $category->id,
+                    'name' => $category->name,
+                    'slug' => $category->slug,
+                    'posts_count' => (int) $category->posts_count,
+                ])
+                ->all()
+        );
+
+        return Category::hydrate($rows);
     }
 
     /**
@@ -99,17 +122,32 @@ class ListPublishedPosts
      */
     public function popularTags(int $limit = 16): Collection
     {
-        return Tag::query()
-            ->select(['id', 'name', 'slug'])
-            ->whereHas('posts', function (Builder $builder): void {
-                $builder->published();
-            })
-            ->withCount(['posts' => function (Builder $builder): void {
-                $builder->published();
-            }])
-            ->orderByDesc('posts_count')
-            ->orderBy('name')
-            ->limit($limit)
-            ->get();
+        /** @var list<array{id: int, name: string, slug: string, posts_count: int}> $rows */
+        $rows = ContentCache::remember(
+            'blog',
+            "popular_tags.{$limit}",
+            self::CACHE_TTL_SECONDS,
+            static fn (): array => Tag::query()
+                ->select(['id', 'name', 'slug'])
+                ->whereHas('posts', function (Builder $builder): void {
+                    $builder->published();
+                })
+                ->withCount(['posts' => function (Builder $builder): void {
+                    $builder->published();
+                }])
+                ->orderByDesc('posts_count')
+                ->orderBy('name')
+                ->limit($limit)
+                ->get()
+                ->map(static fn (Tag $tag): array => [
+                    'id' => $tag->id,
+                    'name' => $tag->name,
+                    'slug' => $tag->slug,
+                    'posts_count' => (int) $tag->posts_count,
+                ])
+                ->all()
+        );
+
+        return Tag::hydrate($rows);
     }
 }

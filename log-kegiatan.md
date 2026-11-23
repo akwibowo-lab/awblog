@@ -139,3 +139,12 @@
 - Tes     : pint ✔ | pest ✔ (44 passed) | e2e ✔ (8 passed, --workers=1) | manual ✔ (DB & cron hPanel)
 - Approval: approve pemilik untuk setup SSH/deploy ke `new.akutwibowo.com` dan `u735114786_newAW`
 - Lanjut  : Performa & Deploy (10)
+
+
+### S13 | 2026-11-23 | Performa & Deploy (10)
+- Hasil   : selesai
+- Dikerjakan: tambah `ContentCache` berbasis domain-version (aman untuk `CACHE_STORE=file` & `serializable_classes=false`), caching HTML beranda (`HomeController`), query blog (`ListPublishedPosts`), proyek (`ListPublishedProjects`), & XML sitemap/RSS (`SeoController`), invalidasi otomatis via model event di `AppServiceProvider`, header `Cache-Control` di `public/.htaccess`, tes `PerformanceCacheTest` & `performance.spec.js`, verifikasi `https://new.akutwibowo.com` (`HTTP/2 200`), deploy ke staging, & merge `feat/staging-hostinger` ke `main`
+- File utama: app/Services/Cache/ContentCache.php, app/Providers/AppServiceProvider.php, app/Http/Controllers/HomeController.php, app/Actions/Home/GetHomepageData.php, app/Actions/Blog/ListPublishedPosts.php, app/Actions/Projects/ListPublishedProjects.php, app/Http/Controllers/SeoController.php, public/.htaccess, tests/Feature/PerformanceCacheTest.php, tests/e2e/performance.spec.js
+- Tes     : pint ✔ | pest ✔ (48 passed) | e2e ✔ (9 passed, --workers=1) | manual ✔ (`https://new.akutwibowo.com` HTTP/2 200)
+- Approval: approve pemilik untuk cek/deploy staging Hostinger & merge ke `main`
+- Lanjut  : Impor Data & Media WordPress ke Staging (`new.akutwibowo.com`)
