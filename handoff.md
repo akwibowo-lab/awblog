@@ -4,16 +4,16 @@
 
 ## Status Saat Ini
 
-- **Fase**: 9 — Admin Filament 5 selesai
-- **Branch aktif**: `feat/filament-admin` (bercabang dari `feat/projects-page`; siap merge ke `main` setelah pemilik setuju)
-- **Fitur sesi terakhir**: Admin Filament 5 (`/admin`, CRUD konten, SEO analyzer, preview, revisi, dan backend dinamis homepage)
-- **Status**: selesai; logo AW Orbit, `FilamentUser`, 6 Resource (`Post`, `Category`, `Tag`, `Media`, `Project`, `Redirect`), `ManageHomepageSettings` (foto hero, sertifikasi, PDF portofolio, kontak, SEO), `PostSeoAnalyzer` (focus keyword + alt text gambar), preview khusus `/admin/preview/...`, sticky sidebar, auto-save draft, maks. 2 revisi artikel, `pint`, Pest (`40 passed`), Playwright (`7 passed`), dan cek manual ✔
-- **Terakhir diperbarui**: 2026-11-22
+- **Fase**: 1b — Staging Hostinger selesai
+- **Branch aktif**: `feat/staging-hostinger` (bercabang dari `feat/filament-admin`)
+- **Fitur sesi terakhir**: Staging Hostinger (`new.akutwibowo.com` di `~/apps/awblog-staging`, docroot symlink `public_html/new`, PHP 8.3.37 web & CLI, DB `u735114786_newAW` termigrasi, `storage:link`, cron `schedule:run` + `queue:work --stop-when-empty`)
+- **Status**: selesai; origin Hostinger `http://new.akutwibowo.com/` & `/up` `200 OK` (menunggu instalasi SSL Hostinger selesai untuk HTTPS Cloudflare), `pint` ✔, Pest (`44 passed`), Playwright (`8 passed, --workers=1`) ✔
+- **Terakhir diperbarui**: 2026-11-23
 
 ## Fitur Sesi Berikutnya (hanya 1)
 
-- **Nama**: Staging Hostinger (1b) atau Performa & Deploy (10)
-- **Tujuan**: Menyiapkan deploy awal ke Staging Hostinger (subdomain, PHP 8.3 web & CLI, DB, storage symlink, cron scheduler — butuh approval), atau optimasi performa & kesiapan rilis produksi.
+- **Nama**: Performa & Deploy (10)
+- **Tujuan**: Optimasi performa (caching halaman/query, verifikasi LCP/WebP), verifikasi akhir HTTPS staging `new.akutwibowo.com` (serta impor data/media staging jika diperlukan), dan merge ke `main`.
 
 ## Keputusan yang Sudah Final
 
@@ -25,41 +25,38 @@
 | 2026-11-12 | Brand: Akut Wibowo (AW Orbit); arah visual sinematik gelap; token di `resources/css/app.css` | Identitas drone |
 | 2026-11-22 | Dev 1 SOT aktif di Proxmox LXC `CT 103 (laravel-dev)` IP `192.168.0.105` (Ubuntu 24.04, 4 vCPU, 4 GB RAM, 30 GB disk) | Hemat RAM host 8 GB, multi-project Laravel via Remote SSH |
 | 2026-11-22 | Kontak homepage: WhatsApp `+6289623084000` (`wa.me/6289623084000`) & email `akwibowo@gmail.com` (tidak ditampilkan eksplisit di tombol) | Permintaan pemilik |
+| 2026-11-23 | Subdomain staging `new.akutwibowo.com` di Hostinger (`~/apps/awblog-staging`, deploy via `rsync` dari `laravel-dev` + `scripts/deploy-staging.sh`) | Isolasi penuh dari WP produksi & `galangbahari.com`; Hostinger tanpa Node.js |
 
 ## Keputusan Terbuka (perlu jawaban pemilik)
 
 - [ ] Host kanonik (`www.akutwibowo.com`), URL gambar lama `/wp-content/uploads/...`, metode bahasa (`/` + `/en/`), letak indeks blog (`/blog`).
-- [ ] Cek Hostinger Premium detail: document root `public/`, cron, pemisahan dari `galangbahari.com` (PHP 8.3.37 CLI `/opt/alt/php83/usr/bin/php` & MariaDB 11.8.9 sudah terkonfirmasi ✔).
+- [ ] Konfirmasi SSL Hostinger untuk `new.akutwibowo.com` aktif (agar `https://new.akutwibowo.com` tidak `525`).
 
 ## Infrastruktur & Data Lama
 
 - **Workspace SOT aktif (Remote SSH)**: `ssh://akut@laravel-dev/home/akut/projects/awblog` (`192.168.0.105`).
+- **Staging Hostinger**: `ssh -p 65002 u735114786@145.79.14.199`, app `~/apps/awblog-staging`, docroot `~/domains/akutwibowo.com/public_html/new` (symlink), DB `u735114786_newAW`, PHP 8.3.37 (`/opt/alt/php83/usr/bin/php`).
 - **DB dev Proxmox**: MariaDB 10.11 lokal (`awblog_dev`, `awblog_test`, user `awblog`) + staging `wp_legacy` (60 tabel prefix `c71gfp8_*`, read-only untuk `awblog`).
 - **Media lokal dev**: `storage/app/public/media/` (1.477 media + varian WebP) tersambung via `public/storage`.
 - **Repo GitHub**: `git@github.com:akwibowo-lab/awblog.git` (private).
-- **Hostinger**: WordPress lama di `~/domains/akutwibowo.com/public_html`, prefix `c71gfp8_*` (abaikan `wpu0_*`). Arsip hanya baca di `~/wp-legacy/` di `laravel-dev`.
 
-## Peta Repo Ringkas
+## Peta Repo Ringkas (Tambahan S12)
 
 ```
-app/Providers/Filament/AdminPanelProvider.php    Panel /admin (AW Orbit, back-to-top hook)
-app/Filament/Resources/{Posts,Categories,Tags,Media,Projects,Redirects}/  CRUD Filament 5
-app/Filament/Pages/ManageHomepageSettings.php    Pengaturan homepage dinamis, foto hero, PDF portofolio
-app/Http/Controllers/Admin/PreviewController.php Rute preview /admin/preview/{posts,projects} (noindex)
-app/Services/Seo/PostSeoAnalyzer.php             Skor SEO focus keyword, metadata, & alt text gambar
-app/Services/MediaUploadService.php              Upload media nama asli + varian WebP
-app/Models/{SiteSetting,PostRevision}.php        Pengaturan homepage & maks. 2 revisi artikel
-tests/Feature/FilamentAdminTest.php              Pest test panel admin, SEO analyzer, preview, revisi
-tests/e2e/admin.spec.js                          Playwright E2E login & responsif panel admin
+.env.staging.example                   Template env staging Hostinger (new.akutwibowo.com)
+scripts/deploy-staging.sh              Skrip deploy idempoten PHP 8.3 CLI
+docs/deploy-hostinger.md               Panduan setup subdomain, cron, & rollback Hostinger
+routes/console.php                     Schedule queue:work --stop-when-empty setiap menit
+tests/Feature/StagingHealthTest.php    Tes Pest kesiapan staging & scheduler
+tests/e2e/health.spec.js               Tes Playwright endpoint /up
 ```
 
 ## Backlog (urut prioritas, jangan dikerjakan tanpa dijadwalkan)
 
-1b. Staging Hostinger (subdomain, PHP 8.3 web dan CLI, deploy awal; butuh approval)
 10. Performa & deploy (caching halaman/query, verifikasi LCP/WebP, merge `main`)
 
 ## Catatan untuk Sesi Berikutnya
 
-- Mulai sesi baru dari branch `feat/filament-admin` (atau merge branch fitur ke `main` terlebih dulu bila pemilik setuju).
+- Mulai sesi baru dari branch `feat/staging-hostinger` (atau setelah cek `https://new.akutwibowo.com` aktif SSL-nya).
 - Di Playwright pada `laravel-dev`, jalankan `npx playwright test --workers=1` agar `php artisan serve` tidak timeout saat paralel.
 - 5 post lama masih punya referensi `wp-content/uploads` karena 8 file sumber hilang di arsip `2026-11-12` (bisa dibersihkan via `/admin/posts`).

@@ -130,3 +130,12 @@
 - Tes     : pint ✔ | pest ✔ (40 passed) | e2e ✔ (7 passed, --workers=1) | manual ✔
 - Approval: -
 - Lanjut  : Staging Hostinger (1b, butuh approval) atau Performa & deploy (10)
+
+
+### S12 | 2026-11-23 | Staging Hostinger (new.akutwibowo.com)
+- Hasil   : selesai (menunggu propagasi instalasi SSL Hostinger untuk HTTPS Cloudflare)
+- Dikerjakan: buat `.env.staging.example`, `scripts/deploy-staging.sh`, `docs/deploy-hostinger.md`, jadwal `queue:work --stop-when-empty` di `routes/console.php`, serta tes `StagingHealthTest` & `health.spec.js`; eksekusi deploy awal ke Hostinger (`~/apps/awblog-staging`, symlink `public_html/new`, `composer install --no-dev`, `APP_KEY`, `storage:link`, `migrate --force` ke `u735114786_newAW`, optimize cache & `schedule:run`) dengan origin `http://new.akutwibowo.com/` `200 OK` (PHP 8.3.37)
+- File utama: .env.staging.example, scripts/deploy-staging.sh, docs/deploy-hostinger.md, routes/console.php, tests/Feature/StagingHealthTest.php, tests/e2e/health.spec.js
+- Tes     : pint ✔ | pest ✔ (44 passed) | e2e ✔ (8 passed, --workers=1) | manual ✔ (DB & cron hPanel)
+- Approval: approve pemilik untuk setup SSH/deploy ke `new.akutwibowo.com` dan `u735114786_newAW`
+- Lanjut  : Performa & Deploy (10)
