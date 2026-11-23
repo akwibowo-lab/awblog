@@ -26,7 +26,7 @@ class RedirectResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedArrowPathRoundedSquare;
 
-    protected static string|UnitEnum|null $navigationGroup = 'Pengaturan & SEO';
+    protected static string|UnitEnum|null $navigationGroup = 'Pengaturan';
 
     protected static ?string $navigationLabel = 'Redirect 301';
 
@@ -34,7 +34,7 @@ class RedirectResource extends Resource
 
     protected static ?string $pluralModelLabel = 'Redirect';
 
-    protected static ?int $navigationSort = 1;
+    protected static ?int $navigationSort = 3;
 
     protected static ?string $recordTitleAttribute = 'source_path';
 
