@@ -4,8 +4,8 @@
 
 ## Status Saat Ini
 
-- **Fase**: Pengembangan fitur di `laravel-dev` (siap uji manual & menunggu persetujuan pemilik untuk deploy ke produksi `https://akutwibowo.com`)
-- **Branch aktif**: `feat/admin-2fa-maintenance` (belum di-merge ke `main` / belum di-deploy ke Hostinger)
+- **Fase**: Produksi aktif di `https://akutwibowo.com` (`main` sudah tersinkron di GitHub, menunggu jalankan `scripts/deploy-prod.sh main` di Hostinger)
+- **Branch aktif**: `main` (hasil merge `feat/admin-2fa-maintenance`)
 - **Fitur sesi terakhir**: 2FA Google Authenticator (TOTP) untuk login `/admin` (tanpa form reset password web), menu **Pengaturan** (`Pengaturan Umum`) dengan toggle Maintenance Mode frontend & backend (`503` + token bypass + `php artisan maintenance:off`), serta penghapusan jejak `FilamentInfoWidget` di dashboard admin.
 - **Status**: menunggu cek manual pemilik di `laravel-dev` & persetujuan deploy ke produksi (`https://akutwibowo.com`)
 - **Terakhir diperbarui**: 2026-11-23
