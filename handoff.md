@@ -4,16 +4,16 @@
 
 ## Status Saat Ini
 
-- **Fase**: 2 — Skema DB inti + Lingkungan dev Proxmox (1 SOT) selesai
-- **Branch aktif**: `feat/db-schema` (siap merge ke `main` setelah pemilik setuju)
-- **Fitur sesi terakhir**: Setup LXC Proxmox `CT 103 (laravel-dev)` + migrasi repo `awblog` ke Remote SSH (menyusul Skema DB S2)
-- **Status**: selesai; `pint`, Pest (`DatabaseSchemaTest` + `HomeTest`), Playwright Chromium E2E, dan SSH dari PC & laptop ke `laravel-dev` lolos
-- **Terakhir diperbarui**: 2026-11-22
+- **Fase**: 1b — Performa, Staging HTTPS, & Merge `main` selesai
+- **Branch aktif**: `main` (hasil merge `feat/staging-hostinger`)
+- **Fitur sesi terakhir**: Performa & Deploy (10) — caching HTML beranda, query blog/proyek, & XML sitemap/RSS via `ContentCache` + invalidasi otomatis model event di `AppServiceProvider`, header `Cache-Control` aset statis di `public/.htaccess`, verifikasi LCP (`fetchpriority="high"`) & WebP (`loading="lazy"`), verifikasi HTTPS `https://new.akutwibowo.com` (`HTTP/2 200`), deploy ke staging, & merge ke `main`
+- **Status**: selesai; `pint` ✔, Pest (`48 passed`) ✔, Playwright (`9 passed, --workers=1`) ✔, `https://new.akutwibowo.com/` & `/up` `HTTP/2 200` ✔
+- **Terakhir diperbarui**: 2026-11-23
 
 ## Fitur Sesi Berikutnya (hanya 1)
 
-- **Nama**: Impor WordPress (`c71gfp8_*`) ke staging `wp_legacy`
-- **Tujuan**: Menyiapkan database staging `wp_legacy` (hanya baca tabel prefix `c71gfp8_*`, abaikan `wpu0_*`) dan command/service impor artikel, kategori, tag, serta relasi ke skema Laravel dengan sanitasi HTML & pelestarian slug lama.
+- **Nama**: Impor Data & Media WordPress ke Staging (`new.akutwibowo.com`)
+- **Tujuan**: Impor 235 artikel, kategori, tag, redirect, dan media WebP (`storage/app/public/media/`) dari dev `laravel-dev` ke DB staging `u735114786_newAW` & `~/apps/awblog-staging/storage/app/public/media/` (serta buat akun admin staging) agar blog staging terisi penuh untuk review sebelum cutover produksi.
 
 ## Keputusan yang Sudah Final
 
@@ -23,46 +23,40 @@
 | 2026-11-12 | WP lama: `/%postname%/`, 235 artikel, URL artikel/kategori/tag dipertahankan persis; selebihnya 301 | Jaga SEO |
 | 2026-11-10 | Domain `akutwibowo.com`; hosting Hostinger Premium; homepage bilingual ID/EN, blog ID | Target klien lokal + internasional |
 | 2026-11-12 | Brand: Akut Wibowo (AW Orbit); arah visual sinematik gelap; token di `resources/css/app.css` | Identitas drone |
-| 2026-11-22 | Dev 1 SOT di Proxmox LXC `CT 103 (laravel-dev)` IP `192.168.0.105` (Ubuntu 24.04, 4 vCPU, 4 GB RAM, 30 GB disk) | Hemat RAM host 8 GB, multi-project Laravel via Remote SSH |
+| 2026-11-22 | Dev 1 SOT aktif di Proxmox LXC `CT 103 (laravel-dev)` IP `192.168.0.105` (Ubuntu 24.04, 4 vCPU, 4 GB RAM, 30 GB disk) | Hemat RAM host 8 GB, multi-project Laravel via Remote SSH |
+| 2026-11-22 | Kontak homepage: WhatsApp `+6289623084000` (`wa.me/6289623084000`) & email `akwibowo@gmail.com` (tidak ditampilkan eksplisit di tombol) | Permintaan pemilik |
+| 2026-11-23 | Subdomain staging `new.akutwibowo.com` di Hostinger (`~/apps/awblog-staging`, deploy via `rsync` dari `laravel-dev` + `scripts/deploy-staging.sh`) | Isolasi penuh dari WP produksi & `galangbahari.com`; Hostinger tanpa Node.js |
+| 2026-11-23 | `ContentCache` berbasis domain-version (`CACHE_STORE=file`, aman untuk `serializable_classes => false`) | Kompatibel shared hosting tanpa Redis |
 
 ## Keputusan Terbuka (perlu jawaban pemilik)
 
 - [ ] Host kanonik (`www.akutwibowo.com`), URL gambar lama `/wp-content/uploads/...`, metode bahasa (`/` + `/en/`), letak indeks blog (`/blog`).
-- [ ] Cek Hostinger Premium detail: document root `public/`, cron, pemisahan dari `galangbahari.com` (PHP 8.3.37 CLI `/opt/alt/php83/usr/bin/php` & MariaDB 11.8.9 sudah terkonfirmasi ✔).
 
 ## Infrastruktur & Data Lama
 
-- **Workspace SOT (Remote SSH)**: `ssh://akut@laravel-dev/home/akut/projects/awblog` (`192.168.0.105`, MAC `BC:24:11:41:A0:77`; mobile Tailscale via `laravel-dev-ts` / `ProxyJump aw-server-ts`).
-- **DB dev Proxmox**: MariaDB 10.11 lokal (`awblog_dev`, `awblog_test`, user `awblog`, password di `~/.awblog_db_pass`).
-- **Repo GitHub**: `git@github.com:akwibowo-lab/awblog.git` (private, SSH key `akut@laravel-dev`).
-- **Arsip lokal PC/laptop (pasif)**: `D:\AntigravitySync\Project\AkutWibowo` — tidak dipakai edit lagi.
-- **Hostinger**: WordPress lama di `~/domains/akutwibowo.com/public_html`, prefix `c71gfp8_` (abaikan `wpu0_*`). Data WP disimpan di luar repo (`~/wp-legacy` di `laravel-dev`), hanya baca.
+- **Workspace SOT aktif (Remote SSH)**: `ssh://akut@laravel-dev/home/akut/projects/awblog` (`192.168.0.105`).
+- **Staging Hostinger**: `ssh -p 65002 u735114786@145.79.14.199`, app `~/apps/awblog-staging`, docroot `~/domains/akutwibowo.com/public_html/new` (symlink), DB `u735114786_newAW` (baru termigrasi, belum terisi data WP), PHP 8.3.37.
+- **DB dev Proxmox**: MariaDB 10.11 lokal (`awblog_dev`, `awblog_test`, user `awblog`) + staging `wp_legacy` (60 tabel prefix `c71gfp8_*`, read-only untuk `awblog`).
+- **Media lokal dev**: `storage/app/public/media/` (1.477 media + varian WebP) tersambung via `public/storage`.
+- **Repo GitHub**: `git@github.com:akwibowo-lab/awblog.git` (private).
 
-## Peta Repo Ringkas
+## Peta Repo Ringkas (Tambahan S13)
 
 ```
-app/Enums/                                     ContentStatus, ProjectType
-app/Models/                                    User, Media, Category, Tag, Post, Project
-database/migrations/                           media, categories, tags, posts, category_post, post_tag, projects
-database/factories/                            MediaFactory, CategoryFactory, TagFactory, PostFactory, ProjectFactory
-tests/Feature/DatabaseSchemaTest.php           Pest test skema DB, relasi, constraint, scope
-tests/Feature/HomeTest.php                     Pest feature test GET /
-tests/e2e/home.spec.js                         Playwright E2E test /
+app/Services/Cache/ContentCache.php       Cache helper berbasis domain-version (file/db safe)
+app/Providers/AppServiceProvider.php      Invalidasi cache otomatis via model events
+public/.htaccess                          Header Cache-Control aset statis (.webp, .css, .js)
+tests/Feature/PerformanceCacheTest.php    Tes Pest cache hit/invalidation & LCP/WebP
+tests/e2e/performance.spec.js             Tes Playwright LCP fetchpriority & lazy loading
 ```
 
 ## Backlog (urut prioritas, jangan dikerjakan tanpa dijadwalkan)
 
-3. Impor WordPress (`c71gfp8_*`) ke staging `wp_legacy`
-4. Impor media + penulisan ulang URL gambar
-5. Halaman blog (daftar, detail, kategori, tag, pencarian)
-1b. Staging Hostinger (subdomain, PHP 8.3 web dan CLI, deploy awal; butuh approval)
-6. SEO: sitemap, RSS, redirect 301, meta, OG
-7. Homepage portofolio (hero, sertifikasi drone, galeri aplikasi, blog terbaru, kontak)
-8. Halaman Proyek/Aplikasi (awork.id, ODM Studio App)
-9. Admin Filament: kelola post, media, proyek, PDF portofolio
-10. Performa & deploy
+- Impor data & media WordPress ke staging `new.akutwibowo.com` + buat akun admin staging
+- Cutover DNS/domain produksi `akutwibowo.com` setelah review staging selesai
 
 ## Catatan untuk Sesi Berikutnya
 
-- Buka proyek via **Remote-SSH** ke `laravel-dev` (`/home/akut/projects/awblog`) dari PC maupun laptop (keduanya sudah terverifikasi ✔).
-- Pastikan dump SQL `c71gfp8_*` dan arsip `uploads` (`akutwibowo-uploads-2026-11-12.tar.gz`) disalin ke `~/wp-legacy` di `laravel-dev` (di luar repo/document root) sebelum mulai impor WP.
+- Mulai dari branch `main` (buat branch baru bila perlu perubahan kode).
+- Database staging `u735114786_newAW` saat ini masih kosong (hanya tabel hasil `migrate --force`), sehingga blog staging tampil kosong sampai impor data & `rsync` media dilakukan.
+- Di Playwright pada `laravel-dev`, jalankan `npx playwright test --workers=1`.

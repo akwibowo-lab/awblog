@@ -60,7 +60,7 @@ Setiap fitur wajib:
 1. `./vendor/bin/pint` bersih.
 2. Tes Pest untuk logika baru lolos (`php artisan test --filter=<Fitur>`), jangan jalankan seluruh suite jika tidak perlu; jalankan penuh hanya di akhir fitur.
 3. Minimal **1 skenario E2E Playwright** untuk alur utama fitur.
-4. Cek manual dari pemilik **bila ditandai** di `handoff.md` (visual, responsif, alur yang sulit diotomasi). Agent menyiapkan **checklist manual** (langkah klik + hasil yang diharapkan), lalu berhenti dan menunggu hasil dari pemilik.
+4. Cek manual dari pemilik **wajib untuk fitur UI/tampilan** atau **bila ditandai** di `handoff.md` (visual, responsif, alur yang sulit diotomasi). Agent menyiapkan **checklist manual** (langkah klik + hasil yang diharapkan), lalu berhenti dan menunggu hasil/feedback dari pemilik sebelum finalisasi.
 5. Update `handoff.md` dan tambahkan 1 baris ke `log-kegiatan.md`.
 6. Commit dan push ke remote GitHub (bagian 8). Sesi belum selesai sebelum push berhasil.
 7. Berikan **prompt siap salin** untuk sesi berikutnya berdasarkan `handoff.md`.
