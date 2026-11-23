@@ -24,7 +24,7 @@
 | 2026-11-10 | Domain `akutwibowo.com`; hosting Hostinger Premium; homepage bilingual ID/EN, blog ID | Target klien lokal + internasional |
 | 2026-11-23 | Host kanonik produksi `https://akutwibowo.com` (non-www); `www.akutwibowo.com` redirect 301 ke non-www | Keputusan pemilik saat cutover |
 | 2026-11-22 | Dev 1 SOT aktif di Proxmox LXC `CT 103 (laravel-dev)` IP `192.168.0.105` | Hemat RAM host 8 GB, multi-project Laravel via Remote SSH |
-| 2026-11-23 | Produksi di `~/apps/awblog-prod` (DB `u735114786_AWblog`), staging di `~/apps/awblog-staging` (DB `u735114786_newAW`) | Isolasi penuh app & DB produksi dari staging |
+| 2026-11-23 | Produksi di `~/apps/awblog-prod` (DB `u735114786_AWblog`); staging `new.akutwibowo.com` dibersihkan | Uji coba dilakukan di `laravel-dev`, hemat resource Hostinger |
 | 2026-11-23 | Rasio tampilan gambar baru (hero, thumbnail proyek & blog) standar `16:9` (`aspect-video`) | Menghindari cropping pada aset 16:9 dari pemilik |
 
 ## Infrastruktur & Data Lama
@@ -32,7 +32,7 @@
 - **Workspace SOT aktif (Remote SSH)**: `ssh://akut@laravel-dev/home/akut/projects/awblog` (`192.168.0.105`).
 - **Produksi Hostinger**: `https://akutwibowo.com` (`~/apps/awblog-prod`, DB `u735114786_AWblog`, symlink selektif di `~/domains/akutwibowo.com/public_html`), PHP 8.3.37.
 - **Backup pra-isolasi**: `~/backups/wp-prod-20261123/` & `~/backups/awblog-newAW-20261123.sql.gz` di Hostinger.
-- **Staging Hostinger**: `https://new.akutwibowo.com` (`~/apps/awblog-staging`, DB `u735114786_newAW`, `public_html/new`).
+- **Staging Hostinger**: sudah dibersihkan (`~/apps/awblog-staging` & `public_html/new` dihapus; sisa cron/subdomain/DB `u735114786_newAW` dibersihkan via hPanel).
 - **Repo GitHub**: `git@github.com:akwibowo-lab/awblog.git` (private).
 
 ## Backlog (urut prioritas, jangan dikerjakan tanpa dijadwalkan)
