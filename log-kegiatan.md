@@ -166,3 +166,12 @@
 - Tes     : pint ✔ | pest n.a. (tanpa ubah logika PHP) | e2e n.a. | manual ✔ (`curl` live HTTP/2 200 & 301) — menunggu cek browser pemilik
 - Approval: approve pemilik untuk cutover `akutwibowo.com` (kanonik non-www) di Hostinger
 - Lanjut  : Lengkapi portofolio/pengaturan di `/admin` produksi & pisahkan DB/cron produksi
+
+
+### S16 | 2026-11-23 | Isolasi DB Produksi, Rasio Gambar 16:9 & Merge main
+- Hasil   : selesai
+- Dikerjakan: backup DB `u735114786_newAW` (`~/backups/awblog-newAW-20261123.sql.gz`), impor ke DB produksi terpisah `u735114786_AWblog` (19 tabel, 242 post), update `.env` `~/apps/awblog-prod` & refresh cache, ubah seluruh wadah gambar hero/thumbnail proyek & blog ke rasio `16:9` (`aspect-video`) tanpa cropping, build aset Vite, deploy `main` ke produksi, & merge `feat/prod-cutover` ke `main`
+- File utama: resources/views/home.blade.php, resources/views/projects/index.blade.php, resources/views/blog/index.blade.php, resources/views/blog/partials/post-card.blade.php, handoff.md, log-kegiatan.md
+- Tes     : pint ✔ | pest ✔ (48 passed) | e2e ✔ (9 passed, --workers=1) | manual ✔ (`https://akutwibowo.com` HTTP/2 200)
+- Approval: approve pemilik untuk isolasi DB produksi Hostinger & merge `feat/prod-cutover` ke `main`
+- Lanjut  : Tambahkan 2FA Google Authenticator (TOTP) untuk login `/admin`

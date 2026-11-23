@@ -4,16 +4,16 @@
 
 ## Status Saat Ini
 
-- **Fase**: Produksi aktif di `https://akutwibowo.com` (cutover selesai)
-- **Branch aktif**: `feat/prod-cutover` (siap di-merge ke `main` setelah konfirmasi pemilik)
-- **Fitur sesi terakhir**: Cutover DNS/Domain Produksi `akutwibowo.com` — backup DB WordPress produksi (`~/backups/wp-prod-20261123/wp_db.sql.gz`, 50 MB) & file WP `public_html` (`~/backups/wp-prod-20261123/public_html/`), setup `~/apps/awblog-prod` (`APP_ENV=production`, `APP_URL=https://akutwibowo.com`), tambah redirect 301 `www.akutwibowo.com` -> `https://akutwibowo.com` di `public/.htaccess`, symlink `public_html` ke `awblog-prod/public` tanpa menyentuh `new`, `parentguard`, `app`, `resume`, `ads.txt`, `.well-known`, tambah `scripts/deploy-prod.sh`, & verifikasi live (`HTTP/2 200` di `/`, `/blog`, `/sitemap.xml`, `/robots.txt`, `/admin/login`, `/ads.txt`, serta `301` dari `www`).
-- **Status**: selesai (menunggu cek manual singkat pemilik di `https://akutwibowo.com` & `/admin`)
+- **Fase**: Produksi aktif di `https://akutwibowo.com` (DB produksi terisolasi & `main` tersinkron)
+- **Branch aktif**: `main` (hasil merge `feat/prod-cutover`)
+- **Fitur sesi terakhir**: Isolasi DB produksi (`u735114786_AWblog`, impor dari backup `~/backups/awblog-newAW-20261123.sql.gz` 242 post), update tampilan seluruh foto/thumbnail/hero ke rasio `16:9` (`aspect-video`) tanpa cropping di Blade (`home`, `projects/index`, `blog/index`, `post-card`), build aset Vite, deploy `main` ke `~/apps/awblog-prod`, & merge `feat/prod-cutover` ke `main`.
+- **Status**: selesai (menunggu pemilik melengkapi konten portofolio via `https://akutwibowo.com/admin` & menambah cron produksi di hPanel)
 - **Terakhir diperbarui**: 2026-11-23
 
 ## Fitur Sesi Berikutnya (hanya 1)
 
-- **Nama**: Lengkapi data portofolio & pengaturan homepage via `/admin` produksi (`site_settings`, foto hero, proyek, PDF portofolio) + pisahkan DB produksi bila staging masih dipakai.
-- **Tujuan**: Mengisi konten portofolio produksi dan merapikan isolasi DB/cron produksi di hPanel.
+- **Nama**: Tambahkan 2FA Google Authenticator (TOTP) untuk login `/admin`.
+- **Tujuan**: Mengamankan akses panel admin produksi dengan autentikasi dua faktor berbasis TOTP (tanpa form reset password web).
 
 ## Keputusan yang Sudah Final
 
@@ -24,24 +24,24 @@
 | 2026-11-10 | Domain `akutwibowo.com`; hosting Hostinger Premium; homepage bilingual ID/EN, blog ID | Target klien lokal + internasional |
 | 2026-11-23 | Host kanonik produksi `https://akutwibowo.com` (non-www); `www.akutwibowo.com` redirect 301 ke non-www | Keputusan pemilik saat cutover |
 | 2026-11-22 | Dev 1 SOT aktif di Proxmox LXC `CT 103 (laravel-dev)` IP `192.168.0.105` | Hemat RAM host 8 GB, multi-project Laravel via Remote SSH |
-| 2026-11-23 | Produksi di `~/apps/awblog-prod`, staging di `~/apps/awblog-staging` (`new.akutwibowo.com`), symlink selektif di `public_html` | Isolasi app sambil menjaga `new`, `parentguard`, `app`, `resume`, `ads.txt` |
+| 2026-11-23 | Produksi di `~/apps/awblog-prod` (DB `u735114786_AWblog`), staging di `~/apps/awblog-staging` (DB `u735114786_newAW`) | Isolasi penuh app & DB produksi dari staging |
+| 2026-11-23 | Rasio tampilan gambar baru (hero, thumbnail proyek & blog) standar `16:9` (`aspect-video`) | Menghindari cropping pada aset 16:9 dari pemilik |
 
 ## Infrastruktur & Data Lama
 
 - **Workspace SOT aktif (Remote SSH)**: `ssh://akut@laravel-dev/home/akut/projects/awblog` (`192.168.0.105`).
-- **Produksi Hostinger**: `https://akutwibowo.com` (`~/apps/awblog-prod`, symlink selektif di `~/domains/akutwibowo.com/public_html`), DB `u735114786_newAW` (bersama staging sementara), PHP 8.3.37.
-- **Backup WP pra-cutover**: `~/backups/wp-prod-20261123/wp_db.sql.gz` & `~/backups/wp-prod-20261123/public_html/` di Hostinger.
-- **Staging Hostinger**: `https://new.akutwibowo.com` (`~/apps/awblog-staging`, `public_html/new`).
+- **Produksi Hostinger**: `https://akutwibowo.com` (`~/apps/awblog-prod`, DB `u735114786_AWblog`, symlink selektif di `~/domains/akutwibowo.com/public_html`), PHP 8.3.37.
+- **Backup pra-isolasi**: `~/backups/wp-prod-20261123/` & `~/backups/awblog-newAW-20261123.sql.gz` di Hostinger.
+- **Staging Hostinger**: `https://new.akutwibowo.com` (`~/apps/awblog-staging`, DB `u735114786_newAW`, `public_html/new`).
 - **Repo GitHub**: `git@github.com:akwibowo-lab/awblog.git` (private).
 
 ## Backlog (urut prioritas, jangan dikerjakan tanpa dijadwalkan)
 
-- Isi/lengkapi data proyek portofolio & pengaturan homepage (`site_settings`, foto hero, PDF portofolio) lewat `https://akutwibowo.com/admin`
 - Tambahkan 2FA Google Authenticator (TOTP) untuk login `/admin` (tanpa form reset password web)
-- Buat database MariaDB produksi terpisah (`u735114786_awblog`) di hPanel & cron `schedule:run` untuk `~/apps/awblog-prod`
-- Merge `feat/prod-cutover` ke `main`
+- Verifikasi & rapikan tampilan portofolio setelah pemilik mengisi data via `https://akutwibowo.com/admin`
+- Pastikan cron `schedule:run` untuk `~/apps/awblog-prod` aktif di hPanel
 
 ## Catatan untuk Sesi Berikutnya
 
-- Jika ingin rollback ke WordPress: hapus 10 symlink Laravel di `public_html` lalu pindahkan kembali isi `~/backups/wp-prod-20261123/public_html/` ke `public_html`.
+- Pemilik mengisi `site_settings`, foto hero 16:9, proyek, dan PDF portofolio langsung melalui `https://akutwibowo.com/admin`.
 - Di Playwright pada `laravel-dev`, jalankan `npx playwright test --workers=1`.
