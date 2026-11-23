@@ -12,7 +12,11 @@ class SiteSetting extends Model
 {
     public const HOMEPAGE_KEY = 'homepage';
 
+    public const MAINTENANCE_KEY = 'maintenance';
+
     private const HOMEPAGE_CACHE_KEY = 'site_settings.homepage';
+
+    private const MAINTENANCE_CACHE_KEY = 'site_settings.maintenance';
 
     /**
      * @return array<string, string>
@@ -62,6 +66,60 @@ class SiteSetting extends Model
         );
 
         Cache::forget(self::HOMEPAGE_CACHE_KEY);
+    }
+
+    /**
+     * Load stored maintenance settings merged over defaults.
+     *
+     * @return array<string, mixed>
+     */
+    public static function getMaintenance(): array
+    {
+        $defaults = self::maintenanceDefaults();
+
+        try {
+            $stored = Cache::rememberForever(self::MAINTENANCE_CACHE_KEY, function (): array {
+                $record = self::query()->where('key', self::MAINTENANCE_KEY)->first();
+
+                return is_array($record?->value) ? $record->value : [];
+            });
+        } catch (Throwable) {
+            $stored = [];
+        }
+
+        return array_replace($defaults, array_filter(
+            $stored,
+            static fn (mixed $value): bool => $value !== null && $value !== ''
+        ));
+    }
+
+    /**
+     * Persist maintenance settings and clear cached copy.
+     *
+     * @param  array<string, mixed>  $data
+     */
+    public static function saveMaintenance(array $data): void
+    {
+        self::query()->updateOrCreate(
+            ['key' => self::MAINTENANCE_KEY],
+            ['value' => $data]
+        );
+
+        Cache::forget(self::MAINTENANCE_CACHE_KEY);
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    public static function maintenanceDefaults(): array
+    {
+        return [
+            'frontend_enabled' => false,
+            'backend_enabled' => false,
+            'title' => 'Situs Sedang Dalam Pemeliharaan',
+            'message' => 'Kami sedang melakukan pembaruan dan peningkatan layanan. Silakan kembali beberapa saat lagi.',
+            'bypass_token' => '',
+        ];
     }
 
     /**

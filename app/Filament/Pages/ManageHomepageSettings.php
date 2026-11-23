@@ -20,7 +20,7 @@ class ManageHomepageSettings extends Page
 {
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedHomeModern;
 
-    protected static string|UnitEnum|null $navigationGroup = 'Pengaturan & SEO';
+    protected static string|UnitEnum|null $navigationGroup = 'Pengaturan';
 
     protected static ?string $navigationLabel = 'Konten Homepage';
 

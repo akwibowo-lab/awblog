@@ -27,4 +27,7 @@ test('admin panel redirects unauthenticated user to login and renders cleanly on
     expect(mobileOverflow).toBe(false);
 
     expect(consoleErrors).toEqual([]);
+
+    const passwordResetResponse = await page.goto('/admin/password-reset/request');
+    expect(passwordResetResponse?.status()).toBe(404);
 });

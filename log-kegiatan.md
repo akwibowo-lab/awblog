@@ -175,3 +175,12 @@
 - Tes     : pint ✔ | pest ✔ (48 passed) | e2e ✔ (9 passed, --workers=1) | manual ✔ (`https://akutwibowo.com` HTTP/2 200)
 - Approval: approve pemilik untuk isolasi DB produksi Hostinger & merge `feat/prod-cutover` ke `main`
 - Lanjut  : Tambahkan 2FA Google Authenticator (TOTP) untuk login `/admin`
+
+
+### S17 | 2026-11-23 | 2FA TOTP Admin, Menu Pengaturan & Maintenance Mode, Hapus Jejak Filament
+- Hasil   : selesai (di `laravel-dev`, menunggu cek manual & persetujuan push ke produksi)
+- Dikerjakan: aktifkan 2FA TOTP (`AppAuthentication` + `profile(isSimple: false)`) di `/admin` tanpa form reset password web + migrasi kolom `users`; buat grup menu `Pengaturan` dengan halaman `Pengaturan Umum` (`ManageSiteSettings`) untuk toggle Maintenance Mode frontend & backend (`CheckMaintenanceMode` HTTP 503, halaman `errors/maintenance.blade.php`, token `?bypass=`, & CLI `php artisan maintenance:off`); hapus `FilamentInfoWidget` dari dashboard admin
+- File utama: app/Providers/Filament/AdminPanelProvider.php, app/Models/User.php, app/Filament/Pages/ManageSiteSettings.php, app/Http/Middleware/CheckMaintenanceMode.php, tests/Feature/AdminSecurityAndMaintenanceTest.php
+- Tes     : pint ✔ | pest ✔ (51 passed) | e2e ✔ (admin.spec.js 1 passed, --workers=1) | manual menunggu cek pemilik
+- Approval: approve pemilik untuk branch `feat/admin-2fa-maintenance` & pengerjaan di `laravel-dev`
+- Lanjut  : Cek manual di `laravel-dev`, lalu tawarkan deploy ke produksi Hostinger dengan persetujuan pemilik
