@@ -4,16 +4,16 @@
 
 ## Status Saat Ini
 
-- **Fase**: 1b — Performa, Staging HTTPS, & Merge `main` selesai
-- **Branch aktif**: `main` (hasil merge `feat/staging-hostinger`)
-- **Fitur sesi terakhir**: Performa & Deploy (10) — caching HTML beranda, query blog/proyek, & XML sitemap/RSS via `ContentCache` + invalidasi otomatis model event di `AppServiceProvider`, header `Cache-Control` aset statis di `public/.htaccess`, verifikasi LCP (`fetchpriority="high"`) & WebP (`loading="lazy"`), verifikasi HTTPS `https://new.akutwibowo.com` (`HTTP/2 200`), deploy ke staging, & merge ke `main`
-- **Status**: selesai; `pint` ✔, Pest (`48 passed`) ✔, Playwright (`9 passed, --workers=1`) ✔, `https://new.akutwibowo.com/` & `/up` `HTTP/2 200` ✔
+- **Fase**: 1b — Staging `new.akutwibowo.com` terisi penuh & siap review
+- **Branch aktif**: `main` (`docs/s14-staging-import` untuk catatan sesi)
+- **Fitur sesi terakhir**: Impor Data & Media WordPress ke Staging (`new.akutwibowo.com`) — backup DB staging (`~/backups/u735114786_newAW_pre_import.sql.gz`), ekspor/impor data konten dari `awblog_dev` ke `u735114786_newAW` (242 post, 20 kategori, 471 tag, 1.479 media, 1 proyek), `rsync` 5.901 file media WebP (~368,7 MB) ke `~/apps/awblog-staging/storage/app/public/media/`, perbaiki symlink `public/storage`, buat akun admin staging (`akwibowo@gmail.com`), & verifikasi HTTP 200 (`/`, `/blog`, `/sitemap.xml`, `/admin/login`, gambar WebP)
+- **Status**: selesai (menunggu cek manual pemilik di `https://new.akutwibowo.com` & `/admin`)
 - **Terakhir diperbarui**: 2026-11-23
 
 ## Fitur Sesi Berikutnya (hanya 1)
 
-- **Nama**: Impor Data & Media WordPress ke Staging (`new.akutwibowo.com`)
-- **Tujuan**: Impor 235 artikel, kategori, tag, redirect, dan media WebP (`storage/app/public/media/`) dari dev `laravel-dev` ke DB staging `u735114786_newAW` & `~/apps/awblog-staging/storage/app/public/media/` (serta buat akun admin staging) agar blog staging terisi penuh untuk review sebelum cutover produksi.
+- **Nama**: Cutover DNS/Domain Produksi `akutwibowo.com`
+- **Tujuan**: Setelah review staging `new.akutwibowo.com` selesai & disetujui pemilik, siapkan/arahkan domain produksi `akutwibowo.com` ke aplikasi Laravel (atau setup direktori produksi terpisah di Hostinger), verifikasi SSL, canonical, redirect 301, dan sitemap.
 
 ## Keputusan yang Sudah Final
 
@@ -35,7 +35,7 @@
 ## Infrastruktur & Data Lama
 
 - **Workspace SOT aktif (Remote SSH)**: `ssh://akut@laravel-dev/home/akut/projects/awblog` (`192.168.0.105`).
-- **Staging Hostinger**: `ssh -p 65002 u735114786@145.79.14.199`, app `~/apps/awblog-staging`, docroot `~/domains/akutwibowo.com/public_html/new` (symlink), DB `u735114786_newAW` (baru termigrasi, belum terisi data WP), PHP 8.3.37.
+- **Staging Hostinger**: `ssh -p 65002 u735114786@145.79.14.199`, app `~/apps/awblog-staging`, docroot `~/domains/akutwibowo.com/public_html/new` (symlink), DB `u735114786_newAW` (terisi penuh: 242 post, 20 kategori, 471 tag, 1.479 media, 1 proyek, 1 user admin), PHP 8.3.37 (`/opt/alt/php83/usr/bin/php` di CLI).
 - **DB dev Proxmox**: MariaDB 10.11 lokal (`awblog_dev`, `awblog_test`, user `awblog`) + staging `wp_legacy` (60 tabel prefix `c71gfp8_*`, read-only untuk `awblog`).
 - **Media lokal dev**: `storage/app/public/media/` (1.477 media + varian WebP) tersambung via `public/storage`.
 - **Repo GitHub**: `git@github.com:akwibowo-lab/awblog.git` (private).
@@ -52,11 +52,11 @@ tests/e2e/performance.spec.js             Tes Playwright LCP fetchpriority & laz
 
 ## Backlog (urut prioritas, jangan dikerjakan tanpa dijadwalkan)
 
-- Impor data & media WordPress ke staging `new.akutwibowo.com` + buat akun admin staging
 - Cutover DNS/domain produksi `akutwibowo.com` setelah review staging selesai
+- Isi/lengkapi data proyek portofolio & pengaturan homepage (`site_settings`, foto hero, PDF portofolio) lewat `/admin` staging
 
 ## Catatan untuk Sesi Berikutnya
 
-- Mulai dari branch `main` (buat branch baru bila perlu perubahan kode).
-- Database staging `u735114786_newAW` saat ini masih kosong (hanya tabel hasil `migrate --force`), sehingga blog staging tampil kosong sampai impor data & `rsync` media dilakukan.
+- Mulai dari branch `main` (pastikan `docs/s14-staging-import` sudah di-merge jika perlu).
+- Backup DB staging pra-impor tersimpan di `~/backups/u735114786_newAW_pre_import.sql.gz` di Hostinger.
 - Di Playwright pada `laravel-dev`, jalankan `npx playwright test --workers=1`.

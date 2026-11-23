@@ -148,3 +148,12 @@
 - Tes     : pint ✔ | pest ✔ (48 passed) | e2e ✔ (9 passed, --workers=1) | manual ✔ (`https://new.akutwibowo.com` HTTP/2 200)
 - Approval: approve pemilik untuk cek/deploy staging Hostinger & merge ke `main`
 - Lanjut  : Impor Data & Media WordPress ke Staging (`new.akutwibowo.com`)
+
+
+### S14 | 2026-11-23 | Impor Data & Media WordPress ke Staging (new.akutwibowo.com)
+- Hasil   : selesai
+- Dikerjakan: backup DB staging `u735114786_newAW` ke `~/backups/`, ekspor tabel konten `awblog_dev` & impor ke `u735114786_newAW` (242 post, 20 kategori, 471 tag, 1.479 media, 1 proyek), `rsync` 5.901 file media WebP (~368,7 MB) ke `~/apps/awblog-staging/storage/app/public/media/`, perbaiki symlink `public/storage`, buat akun admin staging (`akwibowo@gmail.com`), & verifikasi HTTP 200 (`/`, `/blog`, `/sitemap.xml`, `/admin/login`, gambar WebP)
+- File utama: handoff.md, log-kegiatan.md
+- Tes     : pint n.a. (tanpa ubah kode) | pest n.a. | e2e n.a. | manual menunggu cek pemilik
+- Approval: approve pemilik untuk backup/impor DB staging `u735114786_newAW`, `rsync` media ke Hostinger, & pembuatan akun admin staging
+- Lanjut  : Review manual staging & cutover DNS/domain produksi `akutwibowo.com`
