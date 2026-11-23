@@ -37,6 +37,7 @@
 ## Backlog (urut prioritas, jangan dikerjakan tanpa dijadwalkan)
 
 - Isi/lengkapi data proyek portofolio & pengaturan homepage (`site_settings`, foto hero, PDF portofolio) lewat `https://akutwibowo.com/admin`
+- Tambahkan 2FA Google Authenticator (TOTP) untuk login `/admin` (tanpa form reset password web)
 - Buat database MariaDB produksi terpisah (`u735114786_awblog`) di hPanel & cron `schedule:run` untuk `~/apps/awblog-prod`
 - Merge `feat/prod-cutover` ke `main`
 
