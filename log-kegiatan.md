@@ -157,3 +157,12 @@
 - Tes     : pint n.a. (tanpa ubah kode) | pest n.a. | e2e n.a. | manual menunggu cek pemilik
 - Approval: approve pemilik untuk backup/impor DB staging `u735114786_newAW`, `rsync` media ke Hostinger, & pembuatan akun admin staging
 - Lanjut  : Review manual staging & cutover DNS/domain produksi `akutwibowo.com`
+
+
+### S15 | 2026-11-23 | Cutover DNS/Domain Produksi akutwibowo.com
+- Hasil   : selesai
+- Dikerjakan: backup DB WP produksi (`~/backups/wp-prod-20261123/wp_db.sql.gz`) & file WP `public_html` (`~/backups/wp-prod-20261123/public_html/`), setup `~/apps/awblog-prod` (`APP_ENV=production`, `APP_URL=https://akutwibowo.com`), tambah redirect 301 `www.akutwibowo.com` -> `https://akutwibowo.com` di `public/.htaccess`, tambah `scripts/deploy-prod.sh`, symlink selektif `public_html` ke `awblog-prod/public` (menjaga `new`, `parentguard`, `app`, `resume`, `ads.txt`, `.well-known`), & verifikasi live (`HTTP/2 200` `/`, `/blog`, `/sitemap.xml`, `/robots.txt`, `/admin/login`, `/ads.txt`, serta `301` `www` -> non-www)
+- File utama: public/.htaccess, scripts/deploy-prod.sh, handoff.md, log-kegiatan.md
+- Tes     : pint ✔ | pest n.a. (tanpa ubah logika PHP) | e2e n.a. | manual ✔ (`curl` live HTTP/2 200 & 301) — menunggu cek browser pemilik
+- Approval: approve pemilik untuk cutover `akutwibowo.com` (kanonik non-www) di Hostinger
+- Lanjut  : Lengkapi portofolio/pengaturan di `/admin` produksi & pisahkan DB/cron produksi
