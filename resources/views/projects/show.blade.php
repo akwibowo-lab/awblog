@@ -29,29 +29,24 @@
                 </p>
             @endif
 
-            @if ($project['live_url'] || $project['repo_url'] || $project['note'])
+            @if (! empty($project['links']) || $project['note'])
                 <div class="mt-6 flex flex-wrap items-center gap-3">
-                    @if ($project['live_url'])
+                    @foreach ($project['links'] as $link)
                         <a
-                            href="{{ $project['live_url'] }}"
+                            href="{{ $link['url'] }}"
                             target="_blank"
                             rel="noopener noreferrer"
-                            class="inline-flex min-h-11 items-center justify-center rounded-lg bg-brand-accent px-5 py-2.5 text-sm font-semibold text-brand-bg transition-opacity hover:opacity-90"
+                            @if ($link['type'] === 'download') download @endif
+                            @class([
+                                'inline-flex min-h-11 items-center justify-center gap-2 rounded-lg px-5 py-2.5 text-sm font-semibold transition-colors',
+                                'bg-brand-accent text-brand-bg hover:opacity-90' => $loop->first,
+                                'border border-brand-border bg-brand-surface font-medium text-brand-text hover:border-brand-accent hover:text-brand-accent' => ! $loop->first,
+                            ])
                         >
-                            {{ $project['live_label'] ?? __('projects.show.live_link') }}
+                            @include('projects.partials.link-icon', ['type' => $link['type']])
+                            <span>{{ $link['label'] }}</span>
                         </a>
-                    @endif
-
-                    @if ($project['repo_url'])
-                        <a
-                            href="{{ $project['repo_url'] }}"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            class="inline-flex min-h-11 items-center justify-center rounded-lg border border-brand-border bg-brand-surface px-5 py-2.5 text-sm font-medium text-brand-text transition-colors hover:border-brand-accent hover:text-brand-accent"
-                        >
-                            {{ __('projects.show.repo_link') }}
-                        </a>
-                    @endif
+                    @endforeach
 
                     @if (! empty($project['note']))
                         <p class="text-sm text-brand-muted">
@@ -64,7 +59,7 @@
 
         @if ($project['media'])
             <figure class="mt-8">
-                <div class="overflow-hidden rounded-xl border border-brand-border bg-brand-surface">
+                <div class="aspect-video w-full overflow-hidden rounded-xl border border-brand-border bg-brand-surface">
                     <img
                         src="{{ $project['media']['large_url'] }}"
                         alt="{{ $project['media']['alt'] }}"
@@ -72,7 +67,7 @@
                         @if ($project['media']['large_height']) height="{{ $project['media']['large_height'] }}" @endif
                         fetchpriority="high"
                         decoding="async"
-                        class="h-auto w-full object-cover"
+                        class="h-full w-full object-cover"
                     >
                 </div>
             </figure>

@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\ContentStatus;
+use App\Enums\ProjectLinkType;
 use App\Enums\ProjectType;
 use Database\Factories\ProjectFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
@@ -24,6 +25,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
     'description_en',
     'live_url',
     'repo_url',
+    'links',
     'tech_stack',
     'is_featured',
     'sort_order',
@@ -44,6 +46,7 @@ class Project extends Model
     {
         return [
             'type' => ProjectType::class,
+            'links' => 'array',
             'tech_stack' => 'array',
             'is_featured' => 'boolean',
             'sort_order' => 'integer',
@@ -92,5 +95,60 @@ class Project extends Model
     public function scopeOrdered(Builder $query): void
     {
         $query->orderBy('sort_order')->orderByDesc('published_at');
+    }
+
+    /**
+     * Normalize structured links together with legacy live_url / repo_url fields.
+     *
+     * @return list<array{type: string, url: string, label: string}>
+     */
+    public function normalizedLinks(): array
+    {
+        $items = [];
+        $seenUrls = [];
+
+        if (is_array($this->links)) {
+            foreach ($this->links as $link) {
+                if (! is_array($link)) {
+                    continue;
+                }
+
+                $url = trim((string) ($link['url'] ?? ''));
+                if ($url === '' || isset($seenUrls[$url])) {
+                    continue;
+                }
+
+                $type = ProjectLinkType::tryFrom((string) ($link['type'] ?? '')) ?? ProjectLinkType::Web;
+                $label = trim((string) ($link['label'] ?? ''));
+
+                $items[] = [
+                    'type' => $type->value,
+                    'url' => $url,
+                    'label' => $label !== '' ? $label : $type->defaultPublicLabel(),
+                ];
+                $seenUrls[$url] = true;
+            }
+        }
+
+        if (is_string($this->live_url) && trim($this->live_url) !== '' && ! isset($seenUrls[trim($this->live_url)])) {
+            $url = trim($this->live_url);
+            $items[] = [
+                'type' => ProjectLinkType::Web->value,
+                'url' => $url,
+                'label' => __('projects.show.live_link'),
+            ];
+            $seenUrls[$url] = true;
+        }
+
+        if (is_string($this->repo_url) && trim($this->repo_url) !== '' && ! isset($seenUrls[trim($this->repo_url)])) {
+            $url = trim($this->repo_url);
+            $items[] = [
+                'type' => ProjectLinkType::Github->value,
+                'url' => $url,
+                'label' => __('projects.show.repo_link'),
+            ];
+        }
+
+        return $items;
     }
 }

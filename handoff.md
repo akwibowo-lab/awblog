@@ -4,16 +4,16 @@
 
 ## Status Saat Ini
 
-- **Fase**: Produksi aktif di `https://akutwibowo.com` (`main` sudah tersinkron di GitHub, menunggu jalankan `scripts/deploy-prod.sh main` di Hostinger)
-- **Branch aktif**: `main` (hasil merge `feat/admin-2fa-maintenance`)
-- **Fitur sesi terakhir**: 2FA Google Authenticator (TOTP) untuk login `/admin` (tanpa form reset password web), menu **Pengaturan** (`Pengaturan Umum`) dengan toggle Maintenance Mode frontend & backend (`503` + token bypass + `php artisan maintenance:off`), serta penghapusan jejak `FilamentInfoWidget` di dashboard admin.
-- **Status**: menunggu cek manual pemilik di `laravel-dev` & persetujuan deploy ke produksi (`https://akutwibowo.com`)
-- **Terakhir diperbarui**: 2026-11-23
+- **Fase**: Produksi aktif di `https://akutwibowo.com`
+- **Branch aktif**: `feat/portfolio-polish` (siap di-merge ke `main` & deploy ke Hostinger setelah approval pemilik)
+- **Fitur sesi terakhir**: Perbaikan UI portofolio (audit antislop 1–7: tautan detail proyek di `/`, tautan `Proyek` di footer, `aspect-video` di `/proyek/{slug}`, grid 50/50 sejak `md` & penanganan *orphan card*, elevasi bayangan, tombol PDF), tombol berjenjang (`Lihat Detail` + ikon `Web`/`GitHub`/`Play Store`/`Unduh`), kolom `projects.links` (JSON), tombol `Auto-Translate ID → EN (AI)` via Gemini API di `/admin`, serta `DevPortfolioSeeder` untuk `laravel-dev`.
+- **Status**: selesai di `laravel-dev` (Pint, Pest 53 passed, Playwright 3 passed); menunggu approval merge `main`, deploy Hostinger, dan penambahan `GEMINI_API_KEY` di `.env` produksi.
+- **Terakhir diperbarui**: 2026-11-28
 
 ## Fitur Sesi Berikutnya (hanya 1)
 
-- **Nama**: Deploy `feat/admin-2fa-maintenance` ke produksi (bila belum di-approve sesi ini) atau verifikasi & rapikan tampilan portofolio setelah pemilik mengisi data via `https://akutwibowo.com/admin`.
-- **Tujuan**: Menjalankan 2FA TOTP + menu Pengaturan/Maintenance Mode di produksi atau memoles tampilan portofolio pasca-pengisian konten.
+- **Nama**: Merge `feat/portfolio-polish` + deploy produksi (`https://akutwibowo.com`) termasuk `php artisan migrate --force` & `GEMINI_API_KEY`, atau cek cron `schedule:run` di hPanel.
+- **Tujuan**: Menjalankan 2FA TOTP + Maintenance Mode (dari `main`) dan fitur portofolio terbaru (`links`, ikon, Gemini Auto-Translate) di produksi.
 
 ## Keputusan yang Sudah Final
 
@@ -27,6 +27,7 @@
 | 2026-11-23 | Produksi di `~/apps/awblog-prod` (DB `u735114786_AWblog`); staging `new.akutwibowo.com` dibersihkan | Uji coba dilakukan di `laravel-dev`, hemat resource Hostinger |
 | 2026-11-23 | Rasio tampilan gambar baru (hero, thumbnail proyek & blog) standar `16:9` (`aspect-video`) | Menghindari cropping pada aset 16:9 dari pemilik |
 | 2026-11-23 | 2FA `/admin` memakai `AppAuthentication` bawaan Filament 5 (TOTP + recovery codes) dengan `profile(isSimple: false)` tanpa reset password web | Tanpa tambah dependency baru, aman & terintegrasi |
+| 2026-11-28 | Tautan proyek bertipe (`web`, `github`, `playstore`, `download`) disimpan di `projects.links` (JSON) & auto-translate EN memakai Gemini API (`GEMINI_API_KEY`) | Ikon akurat per platform & draf terjemahan cepat di `/admin` |
 
 ## Infrastruktur & Data Lama
 
@@ -37,10 +38,10 @@
 
 ## Backlog (urut prioritas, jangan dikerjakan tanpa dijadwalkan)
 
-- Verifikasi & rapikan tampilan portofolio setelah pemilik mengisi data via `https://akutwibowo.com/admin`
 - Pastikan cron `schedule:run` untuk `~/apps/awblog-prod` aktif di hPanel
+- Verifikasi tampilan portofolio live di `https://akutwibowo.com` setelah deploy & isi data aktual
 
 ## Catatan untuk Sesi Berikutnya
 
-- Jika deploy ke produksi di-approve: merge `feat/admin-2fa-maintenance` ke `main`, push `main`, jalankan `scripts/deploy-prod.sh` di Hostinger (termasuk `php artisan migrate --force` untuk kolom 2FA pada `users`).
+- Saat deploy ke produksi: merge `feat/portfolio-polish` ke `main`, push `main`, jalankan `scripts/deploy-prod.sh main` di Hostinger (termasuk `php artisan migrate --force` untuk kolom 2FA pada `users` dan kolom `links` pada `projects`), dan tambahkan `GEMINI_API_KEY` + `GEMINI_MODEL=gemini-2.5-flash` di `~/apps/awblog-prod/.env`.
 - Di Playwright pada `laravel-dev`, jalankan `npx playwright test --workers=1`.

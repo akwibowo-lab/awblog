@@ -3,11 +3,13 @@
 namespace App\Filament\Resources\Projects;
 
 use App\Enums\ContentStatus;
+use App\Enums\ProjectLinkType;
 use App\Enums\ProjectType;
 use App\Filament\Resources\Projects\Pages\CreateProject;
 use App\Filament\Resources\Projects\Pages\EditProject;
 use App\Filament\Resources\Projects\Pages\ListProjects;
 use App\Models\Project;
+use App\Services\Translation\GeminiProjectTranslator;
 use BackedEnum;
 use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
@@ -18,16 +20,19 @@ use Filament\Actions\ForceDeleteBulkAction;
 use Filament\Actions\RestoreBulkAction;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TagsInput;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
+use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Schemas\Components\Actions;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
@@ -40,6 +45,7 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Str;
+use Throwable;
 use UnitEnum;
 
 class ProjectResource extends Resource
@@ -70,6 +76,56 @@ class ProjectResource extends Resource
                         Section::make('Detail Proyek')
                             ->columnSpan(2)
                             ->columns(2)
+                            ->headerActions([
+                                Action::make('auto_translate_en')
+                                    ->label('Auto-Translate ID → EN (AI)')
+                                    ->icon(Heroicon::OutlinedLanguage)
+                                    ->color('gray')
+                                    ->action(function (Get $get, Set $set): void {
+                                        $titleId = (string) ($get('title_id') ?? '');
+                                        $summaryId = (string) ($get('summary_id') ?? '');
+                                        $descriptionId = (string) ($get('description_id') ?? '');
+
+                                        if (trim($titleId) === '' && trim($summaryId) === '' && trim($descriptionId) === '') {
+                                            Notification::make()
+                                                ->title('Isi teks Bahasa Indonesia terlebih dahulu.')
+                                                ->warning()
+                                                ->send();
+
+                                            return;
+                                        }
+
+                                        try {
+                                            $translated = app(GeminiProjectTranslator::class)->translateToEnglish(
+                                                $titleId,
+                                                $summaryId,
+                                                $descriptionId
+                                            );
+
+                                            if ($translated['title_en'] !== '') {
+                                                $set('title_en', $translated['title_en']);
+                                            }
+                                            if ($translated['summary_en'] !== '') {
+                                                $set('summary_en', $translated['summary_en']);
+                                            }
+                                            if ($translated['description_en'] !== '') {
+                                                $set('description_en', $translated['description_en']);
+                                            }
+
+                                            Notification::make()
+                                                ->title('Terjemahan awal EN berhasil diisi.')
+                                                ->body('Silakan tinjau kembali sebelum menyimpan.')
+                                                ->success()
+                                                ->send();
+                                        } catch (Throwable $exception) {
+                                            Notification::make()
+                                                ->title('Auto-translate gagal')
+                                                ->body($exception->getMessage())
+                                                ->danger()
+                                                ->send();
+                                        }
+                                    }),
+                            ])
                             ->schema([
                                 TextInput::make('title_id')
                                     ->label('Judul (ID)')
@@ -152,12 +208,33 @@ class ProjectResource extends Resource
                                     ->directory('media-uploads')
                                     ->preserveFilenames()
                                     ->maxSize(10240),
+                                Repeater::make('links')
+                                    ->label('Tautan Proyek (Web, GitHub, Play Store, Download)')
+                                    ->schema([
+                                        Select::make('type')
+                                            ->label('Jenis Tautan')
+                                            ->options(ProjectLinkType::class)
+                                            ->default(ProjectLinkType::Web)
+                                            ->required(),
+                                        TextInput::make('url')
+                                            ->label('URL')
+                                            ->url()
+                                            ->required()
+                                            ->maxLength(500),
+                                        TextInput::make('label')
+                                            ->label('Label Tombol (opsional)')
+                                            ->placeholder('Otomatis sesuai jenis tautan')
+                                            ->maxLength(60),
+                                    ])
+                                    ->defaultItems(0)
+                                    ->addActionLabel('Tambah Tautan')
+                                    ->collapsible(),
                                 TextInput::make('live_url')
-                                    ->label('URL Aplikasi / Demo')
+                                    ->label('URL Web / Demo (Legacy)')
                                     ->url()
                                     ->maxLength(500),
                                 TextInput::make('repo_url')
-                                    ->label('URL Repositori')
+                                    ->label('URL GitHub / Repo (Legacy)')
                                     ->url()
                                     ->maxLength(500),
                                 TagsInput::make('tech_stack')

@@ -184,3 +184,12 @@
 - Tes     : pint ✔ | pest ✔ (51 passed) | e2e ✔ (admin.spec.js 1 passed, --workers=1) | manual menunggu cek pemilik
 - Approval: approve pemilik untuk branch `feat/admin-2fa-maintenance` & pengerjaan di `laravel-dev`
 - Lanjut  : Cek manual di `laravel-dev`, lalu tawarkan deploy ke produksi Hostinger dengan persetujuan pemilik
+
+
+### S18 | 2026-11-28 | Verifikasi & Poles Tampilan Portofolio, Tautan Bertipe + Ikon, Gemini Auto-Translate
+- Hasil   : selesai (di `laravel-dev`, branch `feat/portfolio-polish`, menunggu approval merge & deploy produksi)
+- Dikerjakan: jalankan audit antislop (`audit-001` & `report-001`) dan perbaiki 7 temuan UI portofolio (tautan detail proyek di `/`, tautan `Proyek` di footer, `aspect-video` di `/proyek/{slug}`, grid 50/50 sejak `md` & *orphan card*, elevasi bayangan, tombol PDF); ubah aksi kartu proyek menjadi tombol berjenjang (`Lihat Detail` + tombol outline `Website`/`GitHub`/`Play Store`/`Unduh` dengan ikon SVG); tambah migrasi `projects.links` (JSON), enum `ProjectLinkType`, layanan `GeminiProjectTranslator` + tombol `Auto-Translate ID → EN (AI)` di `ProjectResource`, dan `DevPortfolioSeeder` untuk dummy data `laravel-dev`
+- File utama: resources/views/home.blade.php, resources/views/projects/index.blade.php, app/Filament/Resources/Projects/ProjectResource.php, app/Services/Translation/GeminiProjectTranslator.php, database/migrations/2026_11_28_000001_add_links_to_projects_table.php
+- Tes     : pint ✔ | pest ✔ (53 passed, 448 assertions) | e2e ✔ (home, projects, admin: 3 passed, --workers=1) | manual ✔ (`laravel-dev`)
+- Approval: approve pemilik untuk perbaikan 7 temuan audit, tambah kolom `projects.links`, dan integrasi Gemini API
+- Lanjut  : Merge `feat/portfolio-polish` ke `main`, deploy ke Hostinger (`scripts/deploy-prod.sh main` + `migrate --force`), dan pasang `GEMINI_API_KEY` di `.env` produksi
