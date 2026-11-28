@@ -151,6 +151,9 @@
                     <a href="{{ route('home') }}" class="inline-flex min-h-11 items-center hover:text-brand-text transition-colors">
                         {{ __('blog.nav.home') }}
                     </a>
+                    <a href="{{ route('projects.index') }}" class="inline-flex min-h-11 items-center hover:text-brand-text transition-colors">
+                        {{ __('blog.nav.projects') }}
+                    </a>
                     <a href="{{ route('blog.index') }}" class="inline-flex min-h-11 items-center hover:text-brand-text transition-colors">
                         {{ __('blog.nav.blog') }}
                     </a>

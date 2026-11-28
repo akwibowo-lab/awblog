@@ -47,7 +47,7 @@
                         decoding="sync"
                         @class([
                             'h-36 w-36 sm:h-48 sm:w-48 lg:h-52 lg:w-52' => ! $hasCustomHeroImage,
-                            'aspect-video w-full max-w-sm rounded-2xl border border-brand-border object-cover shadow-lg' => $hasCustomHeroImage,
+                            'aspect-video w-full max-w-sm rounded-2xl border border-brand-border object-cover shadow-sm' => $hasCustomHeroImage,
                         ])
                     >
                 </div>
@@ -72,9 +72,14 @@
                             href="{{ $portfolioPdfUrl }}"
                             target="_blank"
                             rel="noopener noreferrer"
-                            class="inline-flex min-h-11 items-center justify-center rounded-lg border border-brand-border bg-brand-surface px-4 py-2.5 text-sm font-medium text-brand-text transition-colors hover:border-brand-accent hover:text-brand-accent"
+                            download
+                            class="inline-flex min-h-11 items-center justify-center gap-2 rounded-lg border border-brand-border bg-brand-surface px-4 py-2.5 text-sm font-medium text-brand-text transition-colors hover:border-brand-accent hover:text-brand-accent"
                         >
-                            {{ $settings['certification_download_label'] }}
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <path d="M12 3v12m0 0 4-4m-4 4-4-4"/>
+                                <path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/>
+                            </svg>
+                            <span>{{ $settings['certification_download_label'] }}</span>
                         </a>
                     </div>
                 @endif
@@ -124,6 +129,10 @@
             </div>
 
             @if ($projects->isNotEmpty())
+                @php
+                    $hasLead = (bool) ($projects->first()?->is_featured ?? false);
+                    $nonLeadCount = $projects->count() - ($hasLead ? 1 : 0);
+                @endphp
                 <div class="mt-8 grid gap-6 md:grid-cols-2">
                     @foreach ($projects as $project)
                         @php
@@ -131,18 +140,24 @@
                             $dimensions = $media?->variantDimensions('medium') ?? ['width' => null, 'height' => null];
                             $typeLabel = __('home.projects.types.'.$project->type->value);
                             $isLead = $loop->first && $project->is_featured;
+                            $isOrphan = ! $isLead && $loop->last && ($nonLeadCount % 2 === 1);
+                            $isWide = $isLead || $isOrphan;
+                            $detailUrl = route('projects.show', ['slug' => $project->slug]);
                         @endphp
 
                         <article @class([
-                            'flex flex-col overflow-hidden rounded-xl border border-brand-border bg-brand-bg transition-colors hover:border-brand-accent/60',
-                            'md:col-span-2 lg:grid lg:grid-cols-12' => $isLead,
+                            'flex min-w-0 flex-col overflow-hidden rounded-xl border border-brand-border bg-brand-bg transition-colors hover:border-brand-accent/60',
+                            'md:col-span-2 md:grid md:grid-cols-12' => $isWide,
                         ])>
                             @if ($media)
-                                <div @class([
-                                    'overflow-hidden bg-brand-surface',
-                                    'aspect-video w-full' => ! $isLead,
-                                    'aspect-video w-full lg:col-span-6 lg:self-center' => $isLead,
-                                ])>
+                                <a
+                                    href="{{ $detailUrl }}"
+                                    @class([
+                                        'block min-w-0 overflow-hidden bg-brand-surface',
+                                        'aspect-video w-full' => ! $isWide,
+                                        'aspect-video w-full md:col-span-6 md:self-center' => $isWide,
+                                    ])
+                                >
                                     <img
                                         src="{{ $media->variantUrl('medium') }}"
                                         alt="{{ $media->altText($project->title_id) }}"
@@ -152,20 +167,22 @@
                                         decoding="async"
                                         class="h-full w-full object-cover"
                                     >
-                                </div>
+                                </a>
                             @endif
 
                             <div @class([
-                                'flex flex-1 flex-col p-5 sm:p-6',
-                                'lg:col-span-6' => $isLead && $media,
-                                'lg:col-span-12' => $isLead && ! $media,
+                                'flex min-w-0 flex-1 flex-col p-5 sm:p-6',
+                                'md:col-span-6' => $isWide && $media,
+                                'md:col-span-12' => $isWide && ! $media,
                             ])>
                                 <span class="font-mono text-xs text-brand-accent">
                                     {{ $typeLabel }}
                                 </span>
 
                                 <h3 class="mt-2 font-display text-lg font-semibold text-brand-text sm:text-xl">
-                                    {{ $project->title_id }}
+                                    <a href="{{ $detailUrl }}" class="transition-colors hover:text-brand-accent">
+                                        {{ $project->title_id }}
+                                    </a>
                                 </h3>
 
                                 <p class="mt-2.5 flex-1 text-sm leading-relaxed text-brand-muted">
@@ -182,31 +199,27 @@
                                     </ul>
                                 @endif
 
-                                @if ($project->live_url || $project->repo_url)
-                                    <div class="mt-5 flex flex-wrap items-center gap-4 border-t border-brand-border/70 pt-3">
-                                        @if ($project->live_url)
-                                            <a
-                                                href="{{ $project->live_url }}"
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                                class="inline-flex min-h-11 items-center text-sm font-medium text-brand-accent-2 transition-colors hover:text-brand-accent"
-                                            >
-                                                {{ __('home.projects.live_link') }}
-                                            </a>
-                                        @endif
+                                <div class="mt-5 flex flex-wrap items-center gap-2 border-t border-brand-border/70 pt-4">
+                                    <a
+                                        href="{{ $detailUrl }}"
+                                        class="inline-flex min-h-11 items-center justify-center rounded-lg bg-brand-accent px-3.5 py-2 text-xs font-semibold text-brand-bg transition-opacity hover:opacity-90 sm:text-sm"
+                                    >
+                                        {{ __('projects.index.view_detail') }}
+                                    </a>
 
-                                        @if ($project->repo_url)
-                                            <a
-                                                href="{{ $project->repo_url }}"
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                                class="inline-flex min-h-11 items-center text-sm font-medium text-brand-muted transition-colors hover:text-brand-text"
-                                            >
-                                                {{ __('home.projects.repo_link') }}
-                                            </a>
-                                        @endif
-                                    </div>
-                                @endif
+                                    @foreach ($project->normalizedLinks() as $link)
+                                        <a
+                                            href="{{ $link['url'] }}"
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            @if ($link['type'] === 'download') download @endif
+                                            class="inline-flex min-h-11 items-center justify-center gap-1.5 rounded-lg border border-brand-border bg-brand-surface px-3 py-2 text-xs font-medium text-brand-text transition-colors hover:border-brand-accent hover:text-brand-accent sm:text-sm"
+                                        >
+                                            @include('projects.partials.link-icon', ['type' => $link['type']])
+                                            <span>{{ $link['label'] }}</span>
+                                        </a>
+                                    @endforeach
+                                </div>
                             </div>
                         </article>
                     @endforeach
@@ -214,12 +227,21 @@
             @else
                 <div class="mt-8 grid gap-6 md:grid-cols-2">
                     @foreach (__('home.projects.fallback_items') as $item)
+                        @php
+                            $fallbackDetailUrl = ! empty($item['slug']) ? route('projects.show', ['slug' => $item['slug']]) : null;
+                        @endphp
                         <article class="flex flex-col rounded-xl border border-brand-border bg-brand-bg p-5 sm:p-6">
                             <span class="font-mono text-xs text-brand-accent">
                                 {{ $item['type'] }}
                             </span>
                             <h3 class="mt-2 font-display text-lg font-semibold text-brand-text sm:text-xl">
-                                {{ $item['title'] }}
+                                @if ($fallbackDetailUrl)
+                                    <a href="{{ $fallbackDetailUrl }}" class="transition-colors hover:text-brand-accent">
+                                        {{ $item['title'] }}
+                                    </a>
+                                @else
+                                    {{ $item['title'] }}
+                                @endif
                             </h3>
                             <p class="mt-2.5 flex-1 text-sm leading-relaxed text-brand-muted">
                                 {{ $item['summary'] }}
@@ -232,22 +254,32 @@
                                 @endforeach
                             </ul>
 
-                            @if (! empty($item['url']))
-                                <div class="mt-5 border-t border-brand-border/70 pt-4">
+                            <div class="mt-5 flex flex-wrap items-center gap-2.5 border-t border-brand-border/70 pt-4">
+                                @if ($fallbackDetailUrl)
+                                    <a
+                                        href="{{ $fallbackDetailUrl }}"
+                                        class="inline-flex min-h-11 items-center justify-center rounded-lg bg-brand-accent px-4 py-2 text-sm font-semibold text-brand-bg transition-opacity hover:opacity-90"
+                                    >
+                                        {{ __('projects.index.view_detail') }}
+                                    </a>
+                                @endif
+
+                                @if (! empty($item['url']))
                                     <a
                                         href="{{ $item['url'] }}"
                                         target="_blank"
                                         rel="noopener noreferrer"
-                                        class="inline-flex min-h-11 items-center justify-center rounded-lg border border-brand-border bg-brand-surface px-4 py-2 text-sm font-medium text-brand-text transition-colors hover:border-brand-accent hover:text-brand-accent"
+                                        class="inline-flex min-h-11 items-center justify-center gap-1.5 rounded-lg border border-brand-border bg-brand-surface px-3.5 py-2 text-sm font-medium text-brand-text transition-colors hover:border-brand-accent hover:text-brand-accent"
                                     >
-                                        {{ $item['url_label'] }}
+                                        @include('projects.partials.link-icon', ['type' => 'web'])
+                                        <span>{{ $item['url_label'] }}</span>
                                     </a>
-                                </div>
-                            @elseif (! empty($item['note']))
-                                <p class="mt-5 border-t border-brand-border/70 pt-3 text-xs text-brand-muted">
-                                    {{ $item['note'] }}
-                                </p>
-                            @endif
+                                @elseif (! empty($item['note']))
+                                    <p class="text-xs text-brand-muted">
+                                        {{ $item['note'] }}
+                                    </p>
+                                @endif
+                            </div>
                         </article>
                     @endforeach
                 </div>
@@ -334,7 +366,7 @@
         type="button"
         aria-label="{{ __('home.back_to_top') }}"
         title="{{ __('home.back_to_top') }}"
-        class="fixed bottom-5 right-5 z-30 hidden min-h-11 min-w-11 items-center justify-center rounded-lg border border-brand-border bg-brand-surface text-brand-text shadow-lg transition-colors hover:border-brand-accent hover:text-brand-accent"
+        class="fixed bottom-5 right-5 z-30 hidden min-h-11 min-w-11 items-center justify-center rounded-lg border border-brand-border bg-brand-surface text-brand-text shadow-md transition-colors hover:border-brand-accent hover:text-brand-accent"
     >
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <path d="M12 19V5M5 12l7-7 7 7"/>

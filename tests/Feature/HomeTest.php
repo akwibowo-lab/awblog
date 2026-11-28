@@ -63,6 +63,8 @@ test('home page renders published projects with lazy webp media and excludes dra
         ->assertSee('project-demo-medium.webp')
         ->assertSee('loading="lazy"', false)
         ->assertSee('https://example.test/live')
+        ->assertSee('/proyek/')
+        ->assertSee('Lihat Detail')
         ->assertDontSee('Proyek Draft Rahasia');
 });
 

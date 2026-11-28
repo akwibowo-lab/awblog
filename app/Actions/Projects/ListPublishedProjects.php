@@ -90,6 +90,7 @@ class ListPublishedProjects
             'live_url' => $project->live_url,
             'live_label' => $project->live_url ? __('projects.show.live_link') : null,
             'repo_url' => $project->repo_url,
+            'links' => $project->normalizedLinks(),
             'is_featured' => (bool) $project->is_featured,
             'note' => null,
             'media' => $media ? [
@@ -113,6 +114,22 @@ class ListPublishedProjects
             ->map(function (array $item): array {
                 $type = (string) ($item['type'] ?? ProjectType::App->value);
 
+                $links = [];
+                if (! empty($item['live_url'])) {
+                    $links[] = [
+                        'type' => 'web',
+                        'url' => (string) $item['live_url'],
+                        'label' => (string) ($item['live_label'] ?? __('projects.show.live_link')),
+                    ];
+                }
+                if (! empty($item['repo_url'])) {
+                    $links[] = [
+                        'type' => 'github',
+                        'url' => (string) $item['repo_url'],
+                        'label' => __('projects.show.repo_link'),
+                    ];
+                }
+
                 return [
                     'slug' => (string) $item['slug'],
                     'type' => $type,
@@ -124,6 +141,7 @@ class ListPublishedProjects
                     'live_url' => $item['live_url'] ?? null,
                     'live_label' => $item['live_label'] ?? null,
                     'repo_url' => $item['repo_url'] ?? null,
+                    'links' => $links,
                     'is_featured' => (bool) ($item['is_featured'] ?? false),
                     'note' => $item['note'] ?? null,
                     'media' => null,

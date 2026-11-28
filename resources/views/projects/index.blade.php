@@ -49,24 +49,30 @@
     <section class="section-band">
         <div class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
             @if ($projects->isNotEmpty())
+                @php
+                    $hasLead = (bool) ($projects->first()['is_featured'] ?? false) && $projects->count() > 1;
+                    $nonLeadCount = $projects->count() - ($hasLead ? 1 : 0);
+                @endphp
                 <div class="grid gap-6 md:grid-cols-2">
                     @foreach ($projects as $project)
                         @php
                             $isLead = $loop->first && $project['is_featured'] && $projects->count() > 1;
+                            $isOrphan = ! $isLead && $loop->last && ($nonLeadCount % 2 === 1);
+                            $isWide = $isLead || $isOrphan;
                             $media = $project['media'];
                         @endphp
 
                         <article @class([
-                            'flex flex-col overflow-hidden rounded-xl border border-brand-border bg-brand-surface transition-colors hover:border-brand-accent/60',
-                            'md:col-span-2 lg:grid lg:grid-cols-12' => $isLead,
+                            'flex min-w-0 flex-col overflow-hidden rounded-xl border border-brand-border bg-brand-surface transition-colors hover:border-brand-accent/60',
+                            'md:col-span-2 md:grid md:grid-cols-12' => $isWide,
                         ])>
                             @if ($media)
                                 <a
                                     href="{{ route('projects.show', ['slug' => $project['slug']]) }}"
                                     @class([
-                                        'block overflow-hidden bg-brand-bg',
-                                        'aspect-video w-full' => ! $isLead,
-                                        'aspect-video w-full lg:col-span-6 lg:self-center' => $isLead,
+                                        'block min-w-0 overflow-hidden bg-brand-bg',
+                                        'aspect-video w-full' => ! $isWide,
+                                        'aspect-video w-full md:col-span-6 md:self-center' => $isWide,
                                     ])
                                 >
                                     <img
@@ -82,9 +88,9 @@
                             @endif
 
                             <div @class([
-                                'flex flex-1 flex-col p-5 sm:p-7',
-                                'lg:col-span-6' => $isLead && $media,
-                                'lg:col-span-12' => $isLead && ! $media,
+                                'flex min-w-0 flex-1 flex-col p-5 sm:p-7',
+                                'md:col-span-6' => $isWide && $media,
+                                'md:col-span-12' => $isWide && ! $media,
                             ])>
                                 <span class="font-mono text-xs text-brand-accent">
                                     {{ $project['type_label'] }}
@@ -119,35 +125,26 @@
                                     </p>
                                 @endif
 
-                                <div class="mt-5 flex flex-wrap items-center gap-4 border-t border-brand-border/70 pt-3">
+                                <div class="mt-5 flex flex-wrap items-center gap-2 border-t border-brand-border/70 pt-4">
                                     <a
                                         href="{{ route('projects.show', ['slug' => $project['slug']]) }}"
-                                        class="inline-flex min-h-11 items-center text-sm font-semibold text-brand-accent transition-colors hover:text-brand-accent-2"
+                                        class="inline-flex min-h-11 items-center justify-center rounded-lg bg-brand-accent px-3.5 py-2 text-xs font-semibold text-brand-bg transition-opacity hover:opacity-90 sm:text-sm"
                                     >
                                         {{ __('projects.index.view_detail') }}
                                     </a>
 
-                                    @if ($project['live_url'])
+                                    @foreach ($project['links'] as $link)
                                         <a
-                                            href="{{ $project['live_url'] }}"
+                                            href="{{ $link['url'] }}"
                                             target="_blank"
                                             rel="noopener noreferrer"
-                                            class="inline-flex min-h-11 items-center text-sm font-medium text-brand-accent-2 transition-colors hover:text-brand-accent"
+                                            @if ($link['type'] === 'download') download @endif
+                                            class="inline-flex min-h-11 items-center justify-center gap-1.5 rounded-lg border border-brand-border bg-brand-bg px-3 py-2 text-xs font-medium text-brand-text transition-colors hover:border-brand-accent hover:text-brand-accent sm:text-sm"
                                         >
-                                            {{ $project['live_label'] ?? __('projects.show.live_link') }}
+                                            @include('projects.partials.link-icon', ['type' => $link['type']])
+                                            <span>{{ $link['label'] }}</span>
                                         </a>
-                                    @endif
-
-                                    @if ($project['repo_url'])
-                                        <a
-                                            href="{{ $project['repo_url'] }}"
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            class="inline-flex min-h-11 items-center text-sm font-medium text-brand-muted transition-colors hover:text-brand-text"
-                                        >
-                                            {{ __('projects.show.repo_link') }}
-                                        </a>
-                                    @endif
+                                    @endforeach
                                 </div>
                             </div>
                         </article>
