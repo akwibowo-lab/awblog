@@ -3,12 +3,16 @@
 use App\Http\Controllers\Admin\PreviewController;
 use App\Http\Controllers\BlogController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\LocaleController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\SeoController;
 use Filament\Http\Middleware\Authenticate as FilamentAuthenticate;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
+Route::get('/lang/{locale}', [LocaleController::class, 'switch'])
+    ->whereIn('locale', ['id', 'en'])
+    ->name('locale.switch');
 
 Route::middleware(FilamentAuthenticate::class)->prefix('admin/preview')->name('admin.preview.')->group(function (): void {
     Route::get('/posts/{post}', [PreviewController::class, 'post'])->name('post');
@@ -29,5 +33,5 @@ Route::get('/tag/{tag:slug}', [BlogController::class, 'tag'])->name('blog.tag');
 
 // Preserve legacy WordPress /%postname%/ article URLs while keeping reserved prefixes free.
 Route::get('/{slug}', [BlogController::class, 'show'])
-    ->where('slug', '^(?!admin$|up$|proyek$|blog$|category$|tag$|storage$|livewire$|feed$)[A-Za-z0-9\-]+$')
+    ->where('slug', '^(?!admin$|up$|lang$|proyek$|blog$|category$|tag$|storage$|livewire$|feed$)[A-Za-z0-9\-]+$')
     ->name('blog.show');

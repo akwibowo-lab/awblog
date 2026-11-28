@@ -97,6 +97,39 @@ class Project extends Model
         $query->orderBy('sort_order')->orderByDesc('published_at');
     }
 
+    public function localizedTitle(?string $locale = null): string
+    {
+        $locale ??= app()->getLocale();
+
+        if ($locale === 'en' && filled($this->title_en)) {
+            return (string) $this->title_en;
+        }
+
+        return (string) $this->title_id;
+    }
+
+    public function localizedSummary(?string $locale = null): string
+    {
+        $locale ??= app()->getLocale();
+
+        if ($locale === 'en' && filled($this->summary_en)) {
+            return (string) $this->summary_en;
+        }
+
+        return (string) ($this->summary_id ?? '');
+    }
+
+    public function localizedDescription(?string $locale = null): string
+    {
+        $locale ??= app()->getLocale();
+
+        if ($locale === 'en' && filled($this->description_en)) {
+            return (string) $this->description_en;
+        }
+
+        return (string) ($this->description_id ?? '');
+    }
+
     /**
      * Normalize structured links together with legacy live_url / repo_url fields.
      *

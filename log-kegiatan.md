@@ -193,3 +193,12 @@
 - Tes     : pint ✔ | pest ✔ (53 passed, 448 assertions) | e2e ✔ (home, projects, admin: 3 passed, --workers=1) | manual ✔ (`laravel-dev`)
 - Approval: approve pemilik untuk perbaikan 7 temuan audit, tambah kolom `projects.links`, dan integrasi Gemini API
 - Lanjut  : Merge `feat/portfolio-polish` ke `main`, deploy ke Hostinger (`scripts/deploy-prod.sh main` + `migrate --force`), dan pasang `GEMINI_API_KEY` di `.env` produksi
+
+
+### S19 | 2026-11-28 | Switch Language ID/EN di Navbar Publik (`/` & `/proyek*`)
+- Hasil   : selesai, di-merge ke `main`, di-push, dan di-deploy ke produksi (`https://akutwibowo.com`)
+- Dikerjakan: tambah middleware `SetPublicLocale` (cookie `awblog_locale` 1 tahun + auto-detect `CF-IPCountry` non-`ID` ke `en`, paksa `id` di blog/lainnya), rute `GET /lang/{locale}` (`LocaleController`), tombol `#lang-toggle` action-oriented (`EN`/`ID`) senada `#theme-toggle` yang hanya tampil di `/`, `/proyek`, dan `/proyek/{slug}`, terjemahan `lang/en/{blog,home,projects}.php`, helper `Project::localized*`, `SiteSetting::getHomepage` per locale, cache HTML homepage/proyek per locale, serta dummy EN di `DevPortfolioSeeder`
+- File utama: app/Http/Middleware/SetPublicLocale.php, app/Http/Controllers/LocaleController.php, resources/views/layouts/public.blade.php, app/Models/Project.php, app/Models/SiteSetting.php, lang/en/home.php, lang/en/projects.php, tests/Feature/LanguageSwitchTest.php, tests/e2e/language-switch.spec.js
+- Tes     : pint ✔ | pest ✔ (57 passed, 491 assertions) | e2e ✔ (home, language-switch, projects: 3 passed, --workers=1) | manual ✔ (`laravel-dev`)
+- Approval: approve pemilik untuk fitur, penyesuaian `EN`/`ID` + auto-detect, merge `main`, dan deploy produksi
+- Lanjut  : Pastikan cron `schedule:run` untuk `~/apps/awblog-prod` aktif di hPanel & `GEMINI_API_KEY` terpasang di `.env` produksi

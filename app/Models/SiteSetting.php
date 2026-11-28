@@ -33,8 +33,9 @@ class SiteSetting extends Model
      *
      * @return array<string, mixed>
      */
-    public static function getHomepage(): array
+    public static function getHomepage(?string $locale = null): array
     {
+        $locale ??= app()->getLocale();
         $defaults = self::homepageDefaults();
 
         try {
@@ -47,10 +48,24 @@ class SiteSetting extends Model
             $stored = [];
         }
 
-        return array_replace($defaults, array_filter(
+        $filtered = array_filter(
             $stored,
             static fn (mixed $value): bool => $value !== null && $value !== '' && $value !== []
-        ));
+        );
+
+        if ($locale === 'en') {
+            $sharedKeys = [
+                'hero_name',
+                'hero_whatsapp_url',
+                'hero_image_path',
+                'portfolio_pdf_path',
+                'contact_whatsapp_url',
+                'contact_email_address',
+            ];
+            $filtered = array_intersect_key($filtered, array_flip($sharedKeys));
+        }
+
+        return array_replace($defaults, $filtered);
     }
 
     /**

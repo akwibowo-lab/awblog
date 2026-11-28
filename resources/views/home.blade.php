@@ -160,7 +160,7 @@
                                 >
                                     <img
                                         src="{{ $media->variantUrl('medium') }}"
-                                        alt="{{ $media->altText($project->title_id) }}"
+                                        alt="{{ $media->altText($project->localizedTitle()) }}"
                                         @if ($dimensions['width']) width="{{ $dimensions['width'] }}" @endif
                                         @if ($dimensions['height']) height="{{ $dimensions['height'] }}" @endif
                                         loading="lazy"
@@ -181,12 +181,12 @@
 
                                 <h3 class="mt-2 font-display text-lg font-semibold text-brand-text sm:text-xl">
                                     <a href="{{ $detailUrl }}" class="transition-colors hover:text-brand-accent">
-                                        {{ $project->title_id }}
+                                        {{ $project->localizedTitle() }}
                                     </a>
                                 </h3>
 
                                 <p class="mt-2.5 flex-1 text-sm leading-relaxed text-brand-muted">
-                                    {{ $project->summary_id }}
+                                    {{ $project->localizedSummary() }}
                                 </p>
 
                                 @if (is_array($project->tech_stack) && count($project->tech_stack) > 0)
