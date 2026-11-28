@@ -40,6 +40,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\HtmlString;
 use Illuminate\Support\Str;
+use Livewire\Component;
 use UnitEnum;
 
 class PostResource extends Resource
@@ -97,6 +98,26 @@ class PostResource extends Resource
                             ->columnSpan(1)
                             ->extraAttributes(['style' => 'position: sticky; top: 5.5rem;'])
                             ->schema([
+                                Actions::make([
+                                    Action::make('sidebar_save')
+                                        ->label(fn (?Post $record): string => $record === null ? 'Buat' : 'Simpan')
+                                        ->color('primary')
+                                        ->action(function (Component $livewire, ?Post $record): void {
+                                            if ($record === null && method_exists($livewire, 'create')) {
+                                                $livewire->create();
+
+                                                return;
+                                            }
+
+                                            if (method_exists($livewire, 'save')) {
+                                                $livewire->save();
+                                            }
+                                        }),
+                                    Action::make('sidebar_cancel')
+                                        ->label('Batal')
+                                        ->color('gray')
+                                        ->url(fn (): string => static::getUrl('index')),
+                                ])->fullWidth(),
                                 Actions::make([
                                     Action::make('preview')
                                         ->label('Preview')

@@ -38,6 +38,7 @@
 
 ## Backlog (urut prioritas, jangan dikerjakan tanpa dijadwalkan)
 
+- Switch Language ID/EN di navbar publik untuk `/` dan `/proyek` (blog tetap ID)
 - Pastikan cron `schedule:run` untuk `~/apps/awblog-prod` aktif di hPanel
 - Verifikasi tampilan portofolio live di `https://akutwibowo.com` setelah deploy & isi data aktual
 
