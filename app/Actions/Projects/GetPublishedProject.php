@@ -15,9 +15,9 @@ class GetPublishedProject
      *
      * @return array{project: array<string, mixed>, others: Collection<int, array<string, mixed>>}|null
      */
-    public function execute(string $slug): ?array
+    public function execute(string $slug, ?string $locale = null): ?array
     {
-        $allProjects = $this->listPublishedProjects->execute();
+        $allProjects = $this->listPublishedProjects->execute(locale: $locale);
         $project = $allProjects->firstWhere('slug', $slug);
 
         if ($project === null) {

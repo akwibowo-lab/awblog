@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -9,7 +9,7 @@
         <link rel="alternate" type="application/rss+xml" title="{{ __('blog.seo.rss_title') }}" href="{{ route('seo.feed') }}">
 
         <meta property="og:site_name" content="{{ __('blog.site_name') }}">
-        <meta property="og:locale" content="id_ID">
+        <meta property="og:locale" content="{{ app()->getLocale() === 'en' ? 'en_US' : 'id_ID' }}">
         <meta property="og:title" content="{{ $seoTitle ?? __('blog.site_name') }}">
         <meta property="og:description" content="{{ $seoDescription ?? __('blog.seo.index_description') }}">
         <meta property="og:type" content="{{ $ogType ?? 'website' }}">
@@ -109,6 +109,24 @@
                     >
                         {{ __('blog.nav.blog') }}
                     </a>
+
+                    @if (request()->routeIs('home', 'projects.index', 'projects.show'))
+                        @php
+                            $currentLocale = app()->getLocale();
+                            $nextLocale = $currentLocale === 'en' ? 'id' : 'en';
+                            $langLabel = $nextLocale === 'en' ? __('blog.nav.lang_to_en') : __('blog.nav.lang_to_id');
+                        @endphp
+                        <a
+                            id="lang-toggle"
+                            href="{{ route('locale.switch', ['locale' => $nextLocale]) }}"
+                            aria-label="{{ $langLabel }}"
+                            title="{{ $langLabel }}"
+                            data-locale="{{ $currentLocale }}"
+                            class="inline-flex min-h-11 min-w-11 items-center justify-center rounded-lg border border-brand-border bg-brand-surface px-2 font-mono text-xs font-semibold uppercase tracking-wide text-brand-text hover:border-brand-accent hover:text-brand-accent transition-colors"
+                        >
+                            {{ strtoupper($nextLocale) }}
+                        </a>
+                    @endif
 
                     <button
                         id="theme-toggle"

@@ -5,15 +5,15 @@
 ## Status Saat Ini
 
 - **Fase**: Produksi aktif di `https://akutwibowo.com`
-- **Branch aktif**: `feat/portfolio-polish` (siap di-merge ke `main` & deploy ke Hostinger setelah approval pemilik)
-- **Fitur sesi terakhir**: Perbaikan UI portofolio (audit antislop 1–7: tautan detail proyek di `/`, tautan `Proyek` di footer, `aspect-video` di `/proyek/{slug}`, grid 50/50 sejak `md` & penanganan *orphan card*, elevasi bayangan, tombol PDF), tombol berjenjang (`Lihat Detail` + ikon `Web`/`GitHub`/`Play Store`/`Unduh`), kolom `projects.links` (JSON), tombol `Auto-Translate ID → EN (AI)` via Gemini API di `/admin`, serta `DevPortfolioSeeder` untuk `laravel-dev`.
-- **Status**: selesai di `laravel-dev` (Pint, Pest 53 passed, Playwright 3 passed); menunggu approval merge `main`, deploy Hostinger, dan penambahan `GEMINI_API_KEY` di `.env` produksi.
+- **Branch aktif**: `main` (setelah merge `feat/language-switch`)
+- **Fitur sesi terakhir**: Switch Language ID/EN di navbar publik untuk `/`, `/proyek`, dan `/proyek/{slug}` (tombol `#lang-toggle` action-oriented `EN`/`ID` senada `#theme-toggle`, cookie `awblog_locale` + auto-detect `CF-IPCountry` non-`ID` → `en`, blog tetap `id`, `lang/en/{blog,home,projects}.php`, `Project::localized*`, `SiteSetting::getHomepage`, serta dummy EN di `DevPortfolioSeeder`).
+- **Status**: selesai di `laravel-dev` (Pint, Pest 57 passed, Playwright 3 passed) dan di-deploy ke produksi `https://akutwibowo.com`.
 - **Terakhir diperbarui**: 2026-11-28
 
 ## Fitur Sesi Berikutnya (hanya 1)
 
-- **Nama**: Merge `feat/portfolio-polish` + deploy produksi (`https://akutwibowo.com`) termasuk `php artisan migrate --force` & `GEMINI_API_KEY`, atau cek cron `schedule:run` di hPanel.
-- **Tujuan**: Menjalankan 2FA TOTP + Maintenance Mode (dari `main`) dan fitur portofolio terbaru (`links`, ikon, Gemini Auto-Translate) di produksi.
+- **Nama**: Pastikan cron `schedule:run` untuk `~/apps/awblog-prod` aktif di hPanel + pasang `GEMINI_API_KEY` di `.env` produksi bila belum.
+- **Tujuan**: Menjamin queue scheduler berjalan rutin dan tombol Auto-Translate AI di `/admin` aktif di produksi.
 
 ## Keputusan yang Sudah Final
 
@@ -38,11 +38,10 @@
 
 ## Backlog (urut prioritas, jangan dikerjakan tanpa dijadwalkan)
 
-- Switch Language ID/EN di navbar publik untuk `/` dan `/proyek` (blog tetap ID)
 - Pastikan cron `schedule:run` untuk `~/apps/awblog-prod` aktif di hPanel
-- Verifikasi tampilan portofolio live di `https://akutwibowo.com` setelah deploy & isi data aktual
+- Verifikasi tampilan portofolio live di `https://akutwibowo.com` setelah isi data aktual
 
 ## Catatan untuk Sesi Berikutnya
 
-- Saat deploy ke produksi: merge `feat/portfolio-polish` ke `main`, push `main`, jalankan `scripts/deploy-prod.sh main` di Hostinger (termasuk `php artisan migrate --force` untuk kolom 2FA pada `users` dan kolom `links` pada `projects`), dan tambahkan `GEMINI_API_KEY` + `GEMINI_MODEL=gemini-2.5-flash` di `~/apps/awblog-prod/.env`.
+- Jika fitur Auto-Translate AI di `/admin` belum aktif di produksi, tambahkan `GEMINI_API_KEY` + `GEMINI_MODEL=gemini-2.5-flash` di `~/apps/awblog-prod/.env`.
 - Di Playwright pada `laravel-dev`, jalankan `npx playwright test --workers=1`.

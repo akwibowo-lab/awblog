@@ -13,11 +13,12 @@ class HomeController extends Controller
 
     public function index(GetHomepageData $getHomepageData): Response
     {
+        $locale = app()->getLocale();
         $hostKey = md5(request()->getSchemeAndHttpHost());
 
-        $html = ContentCache::remember('homepage', "html.{$hostKey}", self::CACHE_TTL_SECONDS, static function () use ($getHomepageData): string {
-            app()->setLocale('id');
-            Carbon::setLocale('id');
+        $html = ContentCache::remember('homepage', "html.{$locale}.{$hostKey}", self::CACHE_TTL_SECONDS, static function () use ($getHomepageData, $locale): string {
+            app()->setLocale($locale);
+            Carbon::setLocale($locale);
 
             $data = $getHomepageData->execute();
             $settings = $data['settings'];

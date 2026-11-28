@@ -13,12 +13,12 @@ class ProjectController extends Controller
 {
     public function index(Request $request, ListPublishedProjects $listPublishedProjects): View
     {
-        app()->setLocale('id');
-        Carbon::setLocale('id');
+        $locale = app()->getLocale();
+        Carbon::setLocale($locale);
 
         $typeParam = $request->query('type');
         $activeType = is_string($typeParam) ? ProjectType::tryFrom($typeParam) : null;
-        $projects = $listPublishedProjects->execute($activeType);
+        $projects = $listPublishedProjects->execute($activeType, $locale);
 
         return view('projects.index', [
             'projects' => $projects,
@@ -34,10 +34,10 @@ class ProjectController extends Controller
 
     public function show(string $slug, GetPublishedProject $getPublishedProject): View
     {
-        app()->setLocale('id');
-        Carbon::setLocale('id');
+        $locale = app()->getLocale();
+        Carbon::setLocale($locale);
 
-        $result = $getPublishedProject->execute($slug);
+        $result = $getPublishedProject->execute($slug, $locale);
 
         abort_if($result === null, 404);
 

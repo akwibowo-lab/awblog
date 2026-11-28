@@ -19,14 +19,15 @@ class ListPublishedProjects
      *
      * @return Collection<int, array<string, mixed>>
      */
-    public function execute(?ProjectType $typeFilter = null): Collection
+    public function execute(?ProjectType $typeFilter = null, ?string $locale = null): Collection
     {
+        $locale ??= app()->getLocale();
         $hostKey = md5(request()->getSchemeAndHttpHost());
 
         /** @var list<array<string, mixed>> $normalized */
         $normalized = ContentCache::remember(
             'projects',
-            "published_normalized.{$hostKey}",
+            "published_normalized.{$locale}.{$hostKey}",
             self::CACHE_TTL_SECONDS,
             fn (): array => Project::query()
                 ->published()
@@ -34,7 +35,7 @@ class ListPublishedProjects
                 ->orderByDesc('is_featured')
                 ->ordered()
                 ->get()
-                ->map(fn (Project $project): array => $this->normalizeModel($project))
+                ->map(fn (Project $project): array => $this->normalizeModel($project, $locale))
                 ->all()
         );
 
@@ -66,15 +67,18 @@ class ListPublishedProjects
      *
      * @return array<string, mixed>
      */
-    public function normalizeModel(Project $project): array
+    public function normalizeModel(Project $project, ?string $locale = null): array
     {
+        $locale ??= app()->getLocale();
         $media = $project->featuredMedia;
         $mediumDims = $media?->variantDimensions('medium') ?? ['width' => null, 'height' => null];
         $largeDims = $media?->variantDimensions('large') ?? ['width' => null, 'height' => null];
-        $descriptionHtml = trim((string) ($project->description_id ?? ''));
+        $title = $project->localizedTitle($locale);
+        $summary = $project->localizedSummary($locale);
+        $descriptionHtml = trim($project->localizedDescription($locale));
 
-        if ($descriptionHtml === '' && trim((string) $project->summary_id) !== '') {
-            $descriptionHtml = '<p>'.e($project->summary_id).'</p>';
+        if ($descriptionHtml === '' && trim($summary) !== '') {
+            $descriptionHtml = '<p>'.e($summary).'</p>';
         } else {
             $descriptionHtml = strip_tags($descriptionHtml, self::ALLOWED_DESCRIPTION_TAGS);
         }
@@ -83,8 +87,8 @@ class ListPublishedProjects
             'slug' => $project->slug,
             'type' => $project->type->value,
             'type_label' => __('projects.types.'.$project->type->value),
-            'title' => $project->title_id,
-            'summary' => $project->summary_id ?? '',
+            'title' => $title,
+            'summary' => $summary,
             'description_html' => $descriptionHtml,
             'tech_stack' => is_array($project->tech_stack) ? array_values($project->tech_stack) : [],
             'live_url' => $project->live_url,
@@ -96,7 +100,7 @@ class ListPublishedProjects
             'media' => $media ? [
                 'url' => $media->variantUrl('medium'),
                 'large_url' => $media->variantUrl('large'),
-                'alt' => $media->altText($project->title_id),
+                'alt' => $media->altText($title),
                 'width' => $mediumDims['width'],
                 'height' => $mediumDims['height'],
                 'large_width' => $largeDims['width'],

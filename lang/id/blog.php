@@ -10,6 +10,8 @@ return [
         'blog' => 'Blog',
         'theme_to_light' => 'Mode terang',
         'theme_to_dark' => 'Mode gelap',
+        'lang_to_en' => 'Switch to English',
+        'lang_to_id' => 'Ganti ke Bahasa Indonesia',
     ],
     'index' => [
         'heading' => 'Catatan & Tulisan',
