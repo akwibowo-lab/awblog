@@ -82,3 +82,35 @@ test('gemini project translator returns english draft fields and validates api k
         'description_en' => '<p>High-resolution orthomosaic output.</p>',
     ]);
 });
+
+test('gemini project translator falls back to next model when primary returns high demand', function () {
+    config()->set('services.gemini.api_key', 'test-gemini-key');
+    config()->set('services.gemini.model', 'gemini-3.8-flash');
+
+    Http::fake([
+        'https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent' => Http::response([
+            'error' => ['message' => 'This model is currently experiencing high demand.'],
+        ], 503),
+        'https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent' => Http::response([
+            'candidates' => [
+                [
+                    'content' => [
+                        'parts' => [
+                            [
+                                'text' => json_encode([
+                                    'title_en' => 'Fallback Success',
+                                    'summary_en' => 'Translated via fallback.',
+                                    'description_en' => '<p>Done.</p>',
+                                ]),
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+        ], 200),
+    ]);
+
+    $result = app(GeminiProjectTranslator::class)->translateToEnglish('Sukses Fallback', 'Diterjemahkan via fallback.', '<p>Selesai.</p>');
+
+    expect($result['title_en'])->toBe('Fallback Success');
+});

@@ -2,13 +2,25 @@
 
 namespace App\Services\Translation;
 
+use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Support\Facades\Http;
 use RuntimeException;
 
 class GeminiProjectTranslator
 {
+    private const TIMEOUT_SECONDS = 45;
+
     /**
-     * Translate Indonesian project fields to English using Gemini API.
+     * @var list<string>
+     */
+    private const FALLBACK_MODELS = [
+        'gemini-3.5-flash-lite',
+        'gemini-flash-latest',
+        'gemini-3.8-flash',
+    ];
+
+    /**
+     * Translate Indonesian project fields to English using Gemini API with fallback models.
      *
      * @return array{title_en: string, summary_en: string, description_en: string}
      */
@@ -19,10 +31,11 @@ class GeminiProjectTranslator
             throw new RuntimeException('GEMINI_API_KEY belum diatur di file .env.');
         }
 
-        $model = trim((string) config('services.gemini.model', 'gemini-2.5-flash'));
-        if ($model === '') {
-            $model = 'gemini-2.5-flash';
-        }
+        $configuredModel = trim((string) config('services.gemini.model', 'gemini-3.5-flash-lite'));
+        $models = array_values(array_unique(array_filter([
+            $configuredModel,
+            ...self::FALLBACK_MODELS,
+        ])));
 
         $payload = [
             'title_id' => trim($titleId),
@@ -41,43 +54,64 @@ Rules:
 Input JSON:
 PROMPT."\n".json_encode($payload, JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR);
 
-        $endpoint = sprintf(
-            'https://generativelanguage.googleapis.com/v1beta/models/%s:generateContent',
-            rawurlencode($model)
-        );
+        $lastError = 'Gagal menghubungi Gemini API.';
 
-        $response = Http::timeout(25)
-            ->withHeaders(['x-goog-api-key' => $apiKey])
-            ->post($endpoint, [
-                'contents' => [
-                    [
-                        'parts' => [
-                            ['text' => $prompt],
+        foreach ($models as $model) {
+            $endpoint = sprintf(
+                'https://generativelanguage.googleapis.com/v1beta/models/%s:generateContent',
+                rawurlencode($model)
+            );
+
+            try {
+                $response = Http::timeout(self::TIMEOUT_SECONDS)
+                    ->withHeaders(['x-goog-api-key' => $apiKey])
+                    ->post($endpoint, [
+                        'contents' => [
+                            [
+                                'parts' => [
+                                    ['text' => $prompt],
+                                ],
+                            ],
                         ],
-                    ],
-                ],
-                'generationConfig' => [
-                    'temperature' => 0.2,
-                    'responseMimeType' => 'application/json',
-                ],
-            ]);
+                        'generationConfig' => [
+                            'temperature' => 0.2,
+                            'responseMimeType' => 'application/json',
+                        ],
+                    ]);
+            } catch (ConnectionException $exception) {
+                $lastError = $exception->getMessage();
 
-        if ($response->failed()) {
-            $message = (string) ($response->json('error.message') ?? 'Gagal menghubungi Gemini API.');
-            throw new RuntimeException($message);
+                continue;
+            }
+
+            if ($response->failed()) {
+                $status = $response->status();
+                $lastError = (string) ($response->json('error.message') ?? $lastError);
+
+                // Retry with next fallback model on transient capacity/rate/timeout or deprecated model errors.
+                if (in_array($status, [404, 429, 500, 502, 503, 504], true)) {
+                    continue;
+                }
+
+                throw new RuntimeException($lastError);
+            }
+
+            $rawText = (string) ($response->json('candidates.0.content.parts.0.text') ?? '');
+            $decoded = json_decode(trim($rawText), true);
+
+            if (! is_array($decoded)) {
+                $lastError = 'Respons Gemini API tidak berformat JSON yang valid.';
+
+                continue;
+            }
+
+            return [
+                'title_en' => trim((string) ($decoded['title_en'] ?? '')),
+                'summary_en' => trim((string) ($decoded['summary_en'] ?? '')),
+                'description_en' => trim((string) ($decoded['description_en'] ?? '')),
+            ];
         }
 
-        $rawText = (string) ($response->json('candidates.0.content.parts.0.text') ?? '');
-        $decoded = json_decode(trim($rawText), true);
-
-        if (! is_array($decoded)) {
-            throw new RuntimeException('Respons Gemini API tidak berformat JSON yang valid.');
-        }
-
-        return [
-            'title_en' => trim((string) ($decoded['title_en'] ?? '')),
-            'summary_en' => trim((string) ($decoded['summary_en'] ?? '')),
-            'description_en' => trim((string) ($decoded['description_en'] ?? '')),
-        ];
+        throw new RuntimeException($lastError);
     }
 }
