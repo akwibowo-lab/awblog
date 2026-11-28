@@ -67,8 +67,9 @@ it('toggles frontend and backend maintenance mode via Pengaturan Umum and suppor
     $this->get('/blog')->assertStatus(503);
     $this->get('/?bypass=rahasia-aw-2026')->assertOk();
 
-    // Backend tetap bisa diakses saat hanya frontend maintenance aktif
+    // Backend dan endpoint Livewire ber-hash tetap bisa diakses saat hanya frontend maintenance aktif
     $this->actingAs($user)->get('/admin')->assertOk();
+    expect($this->post(route('default-livewire.update'))->status())->not->toBe(503);
 
     // Aktifkan backend maintenance mode
     SiteSetting::saveMaintenance([

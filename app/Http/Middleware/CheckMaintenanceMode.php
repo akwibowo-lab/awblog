@@ -73,6 +73,7 @@ class CheckMaintenanceMode
     {
         return $request->is('admin')
             || $request->is('admin/*')
-            || $request->is('livewire/*');
+            || $request->is('livewire/*')
+            || $request->is('livewire-*/*');
     }
 }
